@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>魔法试炼 · 第二关局数显示版</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Noto+Serif+SC:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    body { 
+      font-family: 'Noto Serif SC', serif; 
+      background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 50%, #16213e 100%);
+      overflow: hidden; min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      margin: 0;
+    }
+    .game-container {
+      width: 1280px; height: 720px;
+      background: linear-gradient(180deg, rgba(10,10,26,0.9) 0%, rgba(26,26,46,0.95) 50%, rgba(22,33,62,0.9) 100%);
+      border: 2px solid rgba(192,170,110,0.3); border-radius: 15px;
+      box-shadow: 0 0 50px rgba(192,170,110,0.15); position: relative; overflow: hidden;
+    }
+    .stars, .magic-particles { position: absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; }
+    .star { position: absolute; background: white; border-radius: 50%; animation: twinkle 3s infinite; }
+    @keyframes twinkle { 0%,100%{opacity:0.3} 50%{opacity:1} }
+    @keyframes floatUp { 0%{transform:translateY(720px) rotate(0deg);opacity:0} 10%{opacity:0.6} 90%{opacity:0.6} 100%{transform:translateY(-50px) rotate(360deg);opacity:0} }
+    .candle { animation: float 4s ease-in-out infinite; }
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-15px)} }
+    .btn-magic {
+      background: linear-gradient(135deg, #2d1b4e 0%, #4a2c7a 50%, #2d1b4e 100%);
+      border:2px solid rgba(192,170,110,0.6); border-radius:50px; padding:14px 50px;
+      font-size:18px; font-weight:700; color:#c0aa6e; letter-spacing:6px; cursor:pointer;
+      transition:0.3s; box-shadow:0 0 20px rgba(192,170,110,0.3);
+    }
+    .btn-magic:hover { background:linear-gradient(135deg,#3d2b5e 0%,#5a3c8a 50%,#3d2b5e 100%); transform:translateY(-3px); }
+    .hidden-section { display: none !important; }
+    .camera-box { border:2px solid rgba(192,170,110,0.5); border-radius:12px; overflow:hidden; background:black; }
+    .spell-option { transition:0.3s; cursor:pointer; }
+    .spell-option.selected { border-color:#ffd700; box-shadow:0 0 20px rgba(255,215,0,0.5); }
+    .info-panel { background: rgba(0,0,0,0.5); border: 1px solid rgba(255,215,0,0.3); border-radius: 12px; padding: 16px; }
+    .dodge-canvas { border:2px solid rgba(255,215,0,0.5); border-radius:12px; }
+  </style>
+</head>
+<body>
+<audio id="bgMusic" loop preload="auto">
+  <source src="assets/music/menu_music.mp3" type="audio/mpeg">
+  您的浏览器不支持音频播放。
+</audio>
+
+<div class="game-container" id="gameContainer">
+  <div class="stars" id="starsContainer"></div>
+  <div class="magic-particles" id="particlesContainer"></div>
+
+  <!-- 主界面 -->
+  <div id="mainSection" class="relative z-10 flex flex-col items-center pt-8">
+    <div class="flex justify-center gap-16 mb-2">
+      <div class="candle"><div class="candle-flame" style="width:15px;height:25px;background:linear-gradient(to top,#ff6b35,#ffd700);border-radius:50%;"></div><div class="candle-body" style="width:20px;height:60px;background:#c49464;border-radius:3px;"></div></div>
+      <div class="candle"><div class="candle-flame" style="width:15px;height:25px;background:linear-gradient(to top,#ff6b35,#ffd700);border-radius:50%;"></div><div class="candle-body" style="width:20px;height:60px;background:#c49464;border-radius:3px;"></div></div>
+      <div class="candle"><div class="candle-flame" style="width:15px;height:25px;background:linear-gradient(to top,#ff6b35,#ffd700);border-radius:50%;"></div><div class="candle-body" style="width:20px;height:60px;background:#c49464;border-radius:3px;"></div></div>
+      <div class="candle"><div class="candle-flame" style="width:15px;height:25px;background:linear-gradient(to top,#ff6b35,#ffd700);border-radius:50%;"></div><div class="candle-body" style="width:20px;height:60px;background:#c49464;border-radius:3px;"></div></div>
+      <div class="candle"><div class="candle-flame" style="width:15px;height:25px;background:linear-gradient(to top,#ff6b35,#ffd700);border-radius:50%;"></div><div class="candle-body" style="width:20px;height:60px;background:#c49464;border-radius:3px;"></div></div>
+    </div>
+
+    <h1 class="text-5xl font-black text-amber-400 tracking-widest mb-1">HOGWARTS</h1>
+    <p class="text-xl text-amber-600 tracking-widest">⚔️ 魔法觉醒 ⚔️</p>
+
+    <div id="normalUI" class="flex flex-col items-center gap-4 mt-4">
+      <input type="text" id="playerName" placeholder="请输入你的魔法昵称" class="px-5 py-2.5 text-center rounded-full bg-gray-900 text-amber-400 border border-amber-500/40 w-72 text-lg font-bold">
+      <div class="camera-box w-96 h-56 relative" id="normalCamera">
+        <video id="webcam" autoplay playsinline class="w-full h-full object-cover"></video>
+        <canvas id="snapshotCanvas" class="hidden"></canvas>
+      </div>
+    </div>
+
+    <p class="text-amber-300 text-sm mt-3" id="houseTip">戴上分院帽，点击下方按钮开启分院仪式...</p>
+
+    <div class="flex gap-4 mt-4">
+      <button class="btn-magic" id="sortBtn" onclick="startSorting()">⚡ 开启分院仪式</button>
+      <button class="btn-magic hidden" id="duel1Btn" onclick="startDuel1()">🛡️ 开始第一关</button>
+      <button class="btn-magic hidden" id="duel2Btn" onclick="startDuel2()">🔮 进入第二关</button>
+      <button class="btn-magic hidden" id="duel3Btn" onclick="startDuel3()">🔥 进入第三关</button>
+    </div>
+
+    <div id="sortingResult" class="hidden mt-4 bg-black/40 border border-amber-500/40 p-4 rounded-xl text-center"></div>
+
+    <!-- 第一关游戏区 -->
+    <div id="gameArea" class="hidden flex items-start justify-center gap-6 mt-4 w-full px-8">
+      <div class="camera-box w-96 h-56 relative" id="gameCamera"></div>
+      <div id="gameInfoPanel" class="info-panel flex-1 max-w-md text-amber-300">
+        <div id="duel1Info"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 第二关（局数显示已整合在右侧面板） -->
+  <div id="duel2Section" class="hidden-section absolute inset-0 flex items-center justify-center z-20">
+    <div class="flex gap-8 items-start">
+      <!-- 左侧：咒语卡片和录音按钮 -->
+      <div class="flex flex-col items-center">
+        <h2 class="text-3xl font-black text-purple-400 mb-4">⚔️ 第二关：咒语对决 ⚔️</h2>
+        <p class="text-gray-400 mb-6">选择一张魔咒卡牌，然后大声念出它！</p>
+        <div id="spellCards" class="flex gap-6 mb-8"></div>
+        <div class="bg-black/40 border border-purple-500/40 p-6 rounded-xl flex flex-col items-center gap-3">
+          <p class="text-amber-400 font-mono text-xl" id="activeSpell">⏳ 请挑选魔咒卡牌</p>
+          <button id="recordBtn" class="btn-magic opacity-50 cursor-not-allowed" disabled onclick="startVoice()">🎤 注入法力</button>
+          <div id="spellFeedback" class="hidden text-center"></div>
+        </div>
+        <button class="btn-magic mt-6" onclick="backToMain()">🏠 返回主界面</button>
+      </div>
+      <!-- 右侧：局数、比分、状态面板 -->
+      <div id="duel2InfoPanel" class="info-panel w-56 text-amber-300 mt-20">
+        <div class="text-lg font-bold mb-2">第 <span id="spellRoundDisplay">1</span> 局</div>
+        <div class="flex justify-between mb-2">
+          <span style="color:#4ade80;">胜: <span id="spellWinsDisplay">0</span></span>
+          <span style="color:#f87171;">负: <span id="spellLossesDisplay">0</span></span>
+        </div>
+        <div class="text-sm text-gray-400 mt-2">当前咒语：</div>
+        <div id="currentSpellDisplay" class="text-purple-400 font-mono text-sm break-words">未选择</div>
+        <div id="spellStatusText" class="text-xs text-gray-500 mt-2">等待开始...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 第三关 -->
+  <div id="duel3Section" class="hidden-section absolute inset-0 flex flex-col items-center justify-center z-30">
+    <h2 class="text-3xl font-black text-red-400 mb-2">🔥 第三关：躲避火球 🔥</h2>
+    <p class="text-gray-400 mb-4">移动你的头部，躲避飞来的火球！坚持30秒</p>
+    <div class="flex gap-8 items-start">
+      <canvas id="dodgeCanvas" class="dodge-canvas" width="640" height="480"></canvas>
+      <div class="info-panel w-56 text-amber-300">
+        <div class="text-lg font-bold mb-2" id="dodgeHealth">❤️ 血量: 5/5</div>
+        <div class="w-full bg-gray-700 rounded-full h-4 mb-2">
+          <div id="healthBar" class="bg-red-500 h-4 rounded-full" style="width:100%"></div>
+        </div>
+        <div class="text-lg font-bold mb-2" id="dodgeTimer">⏱ 剩余 30 秒</div>
+        <div class="text-sm text-gray-400">按 Q 退出</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-96 h-40 opacity-20">
+    <svg viewBox="0 0 400 200"><path d="M200 10 L210 40 L205 40 L215 70 L225 40 L220 40 L230 20 L240 40 L235 40 L245 60 L255 40 L250 40 L260 10" fill="#c0aa6e"/></svg>
+  </div>
+
+  <!-- 结算视频覆盖层 -->
+  <div id="settlementOverlay" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; z-index:50; background:rgba(0,0,0,0.85); align-items:center; justify-content:center;">
+    <video id="settlementVideo" style="max-width:70%; max-height:70%; border-radius:12px; box-shadow:0 0 40px rgba(192,170,110,0.6);" preload="auto" playsinline>
+      <source src="assets/videos/test.mp4" type="video/mp4">
+      您的浏览器不支持视频播放。
+    </video>
+  </div>
+</div>
+
+<script type="module">
+  // ==================== 音频 ====================
+  const bgMusic = document.getElementById('bgMusic');
+  let musicStarted = false;
+  function tryPlayMusic() {
+    if (!musicStarted) {
+      bgMusic.play().then(() => { musicStarted = true; bgMusic.volume = 0.4; }).catch(() => {});
+    }
+  }
+  document.body.addEventListener('click', tryPlayMusic, { once: true });
+
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  let audioCtx = null;
+  function beep(freq, dur, type='sine') {
+    try {
+      if(!audioCtx) audioCtx = new AudioCtx();
+      const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+      o.type=type; o.frequency.value=freq; g.gain.value=0.3;
+      o.connect(g); g.connect(audioCtx.destination);
+      o.start(); o.stop(audioCtx.currentTime+dur);
+    } catch(e) {}
+  }
+  function sfxSuccess() { beep(660,0.2,'square'); }
+  function sfxFail() { beep(220,0.3,'sawtooth'); }
+  function sfxHit() { beep(150,0.15,'triangle'); }
+
+  // ==================== 初始化 ====================
+  import { HandLandmarker, FaceLandmarker, FilesetResolver } from 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3';
+
+  for (let i=0;i<50;i++) {
+    const s=document.createElement('div'); s.className='star';
+    s.style.left=Math.random()*100+'%'; s.style.top=Math.random()*100+'%';
+    s.style.width=s.style.height=Math.random()*3+1+'px'; s.style.animationDelay=Math.random()*3+'s';
+    document.getElementById('starsContainer').appendChild(s);
+  }
+  for (let i=0;i<20;i++) {
+    const p=document.createElement('div');
+    p.style.cssText=`position:absolute;width:4px;height:4px;background:#c0aa6e;border-radius:50%;opacity:0.6;animation:floatUp ${6+Math.random()*4}s linear infinite;left:${Math.random()*100}%;animation-delay:${Math.random()*8}s`;
+    document.getElementById('particlesContainer').appendChild(p);
+  }
+
+  const video = document.getElementById('webcam');
+  const snapshotCanvas = document.getElementById('snapshotCanvas');
+  const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480, facingMode: 'user' } });
+  video.srcObject = stream;
+  await video.play();
+  snapshotCanvas.width=640; snapshotCanvas.height=480;
+
+  const vision = await FilesetResolver.forVisionTasks('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3/wasm');
+  const faceLandmarker = await FaceLandmarker.createFromOptions(vision, {
+    baseOptions: { modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/latest/face_landmarker.task' },
+    runningMode:'IMAGE', numFaces:1
+  });
+  const handLandmarker = await HandLandmarker.createFromOptions(vision, {
+    baseOptions: { modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/latest/hand_landmarker.task' },
+    runningMode:'VIDEO', numHands:1
+  });
+  const faceLandmarkerVideo = await FaceLandmarker.createFromOptions(vision, {
+    baseOptions: { modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/latest/face_landmarker.task' },
+    runningMode:'VIDEO', numFaces:1
+  });
+
+  // ==================== 分院 ====================
+  const houseNames=['Gryffindor','Slytherin','Ravenclaw','Hufflepuff'];
+  const houseFeatures={};
+  houseNames.forEach(h=>{ houseFeatures[h]={eyes:[],nose:[],mouth:[]}; for(let i=0;i<30;i++) houseFeatures[h].eyes.push(Math.random()); for(let i=0;i<10;i++) houseFeatures[h].nose.push(Math.random()); for(let i=0;i<20;i++) houseFeatures[h].mouth.push(Math.random()); });
+
+  function extractFaceFeatures(landmarks) {
+    const le=[33,133,155,154,153,145,144,163,7,173,157,158,159,160,161,246];
+    const re=[362,263,398,384,385,386,387,388,466,390,373,374,380,381,382,463];
+    const n=[1,2,98,327,168,6,197,195,5,4,45,275,220,44,19,240];
+    const m=[61,146,91,181,84,17,314,405,321,375,78,191,80,81,82,13,312,311,310,415,308,324,318,402,317,14,87,178,88,95];
+    const get=pts=>pts.map(i=>landmarks[i].x*100+landmarks[i].y*100);
+    return {eyes:[...get(le),...get(re)], nose:get(n), mouth:get(m)};
+  }
+  function cosineSimilarity(a,b) {
+    let dot=0,normA=0,normB=0;
+    for(let i=0;i<a.length;i++){dot+=a[i]*b[i];normA+=a[i]*a[i];normB+=b[i]*b[i];}
+    return dot/(Math.sqrt(normA)*Math.sqrt(normB));
+  }
+
+  window.startSorting = async function() {
+    tryPlayMusic();
+    const name=document.getElementById('playerName').value.trim();
+    if(!name){alert('请输入昵称');return;}
+    document.getElementById('houseTip').innerText='分院帽正在审视你的灵魂...';
+    const ctx=snapshotCanvas.getContext('2d');
+    ctx.drawImage(video,0,0,640,480);
+    const results=faceLandmarker.detect(snapshotCanvas);
+    if(!results.faceLandmarks?.length){document.getElementById('houseTip').innerText='未检测到人脸';return;}
+    const feat=extractFaceFeatures(results.faceLandmarks[0]);
+    let best='Gryffindor',bestSim=-1;
+    for(const [h,f] of Object.entries(houseFeatures)){
+      const sim=(cosineSimilarity(feat.eyes,f.eyes)+cosineSimilarity(feat.nose,f.nose)+cosineSimilarity(feat.mouth,f.mouth))/3;
+      if(sim>bestSim){bestSim=sim;best=h;}
+    }
+    document.getElementById('sortingResult').classList.remove('hidden');
+    document.getElementById('sortingResult').innerHTML=`<h3 class="text-2xl font-black text-amber-400">🎩 ${best} 学院</h3><p class="text-sm text-gray-300">面部特征解析完成</p>`;
+    document.getElementById('houseTip').innerText=`欢迎，${name}！你属于【${best}】。`;
+    document.getElementById('duel1Btn').classList.remove('hidden');
+    window.passedDuel1 = window.passedDuel2 = false;
+    sfxSuccess();
+  };
+
+  // ==================== 第一关 ====================
+  let duel1State={playerWins:0,monsterWins:0,round:1,rounds:[],active:false,finished:false};
+  let duel1Timer,duel1Interval,countdown=3;
+
+  function classifyGesture(lms,w,h){
+    const idx=[0,9,13]; const pts=idx.map(i=>({x:lms[i].x*w,y:lms[i].y*h}));
+    const cx=pts.reduce((s,p)=>s+p.x,0)/3, cy=pts.reduce((s,p)=>s+p.y,0)/3;
+    const r=Math.max(...pts.map(p=>Math.hypot(p.x-cx,p.y-cy)))*0.85;
+    const tips=[4,8,12,16,20]; const st=tips.map(t=>Math.hypot(lms[t].x*w-cx,lms[t].y*h-cy)>r?1:0);
+    if(st.every(s=>s===0))return'rock';
+    if(st.every(s=>s===1))return'paper';
+    if(st[1]&&st[2]&&st.filter(s=>s).length===2)return'scissors';
+    return null;
+  }
+  function playRound(){
+    const res=handLandmarker.detectForVideo(video,performance.now());
+    let player='rock';
+    if(res.landmarks?.length){ const g=classifyGesture(res.landmarks[0],video.videoWidth,video.videoHeight); if(g)player=g; }
+    const monster=['rock','paper','scissors'][Math.floor(Math.random()*3)];
+    let result;
+    if(player===monster)result='draw';
+    else if((player==='rock'&&monster==='scissors')||(player==='scissors'&&monster==='paper')||(player==='paper'&&monster==='rock'))result='player';
+    else result='monster';
+    if(result==='player')duel1State.playerWins++; else if(result==='monster')duel1State.monsterWins++;
+    duel1State.rounds.push({round:duel1State.round,player,monster,result});
+    duel1State.round++;
+    if(duel1State.playerWins>=3||duel1State.monsterWins>=3){duel1State.finished=true;duel1State.active=false;}
+    if(result==='player')sfxSuccess(); else if(result==='monster')sfxFail();
+    return{player,monster,result};
+  }
+
+  window.startDuel1 = function() {
+    tryPlayMusic();
+    duel1State={playerWins:0,monsterWins:0,round:1,rounds:[],active:true,finished:false};
+    document.getElementById('normalUI').classList.add('hidden');
+    document.getElementById('houseTip').classList.add('hidden');
+    ['sortBtn','duel1Btn','duel2Btn','duel3Btn'].forEach(id=>document.getElementById(id).classList.add('hidden'));
+    document.getElementById('sortingResult').classList.add('hidden');
+    const cam=document.getElementById('normalCamera');
+    document.getElementById('gameCamera').appendChild(cam);
+    cam.classList.remove('hidden');
+    document.getElementById('gameArea').classList.remove('hidden');
+    runDuel1Loop();
+  };
+
+  function runDuel1Loop(){
+    if(!duel1State.active)return;
+    countdown=3;
+    const info=document.getElementById('duel1Info');
+    info.innerHTML=`<div class="text-lg font-bold mb-2">第 ${duel1State.round} 局</div><div class="flex justify-between mb-2"><span style="color:#4ade80;">你: ${duel1State.playerWins}胜</span><span style="color:#f87171;">三头怪: ${duel1State.monsterWins}胜</span></div><div id="cd" class="text-2xl text-yellow-400 mb-2">倒计时: ${countdown}</div><div id="gestureText" class="text-lg text-amber-300">检测手势...</div>`;
+    clearInterval(duel1Interval);clearInterval(duel1Timer);
+    duel1Interval=setInterval(()=>{
+      const res=handLandmarker.detectForVideo(video,performance.now());
+      const gDiv=document.getElementById('gestureText');
+      if(res.landmarks?.length){const g=classifyGesture(res.landmarks[0],video.videoWidth,video.videoHeight); gDiv.innerHTML=g?`检测到: ${g==='rock'?'✊':g==='paper'?'✋':'✌️'} ${g}`:'...';}
+    },200);
+    duel1Timer=setInterval(()=>{
+      countdown--;
+      document.getElementById('cd').innerText=`倒计时: ${countdown}`;
+      if(countdown<=0){
+        clearInterval(duel1Timer);clearInterval(duel1Interval);
+        const{player,monster,result}=playRound();
+        let color=result==='player'?'#4ade80':(result==='monster'?'#f87171':'#fbbf24');
+        info.innerHTML=`<div style="color:${color}" class="text-xl font-bold">${result==='player'?'你赢了！':(result==='monster'?'三头怪赢了！':'平局！')}</div><div class="text-sm">你出 ${player} vs 三头怪 ${monster}</div><div class="mt-2">比分：你 ${duel1State.playerWins} : ${duel1State.monsterWins}</div>`;
+        // 非平局时播放结算视频，平局直接继续
+        if(result!=='draw'){
+          playSettlementVideo(()=>proceedAfterDuel1Round(info));
+        }else{
+          proceedAfterDuel1Round(info);
+        }
+      }
+    },1000);
+  }
+
+  function proceedAfterDuel1Round(info){
+    if(duel1State.finished){
+      const win=duel1State.playerWins>duel1State.monsterWins;
+      setTimeout(()=>{
+        info.innerHTML=`<div class="text-2xl font-bold">${win?'🎉 通过第一关！':'💀 第一关失败'}</div>`;
+        const cam=document.getElementById('normalCamera');
+        document.getElementById('normalUI').insertBefore(cam,document.getElementById('normalUI').firstChild);
+        document.getElementById('gameArea').classList.add('hidden');
+        document.getElementById('normalUI').classList.remove('hidden');
+        document.getElementById('houseTip').classList.remove('hidden');
+        document.getElementById('sortBtn').classList.remove('hidden');
+        if(win){ document.getElementById('duel2Btn').classList.remove('hidden'); window.passedDuel1=true; }
+        else document.getElementById('duel1Btn').classList.remove('hidden');
+      },2000);
+    }else{ setTimeout(()=>runDuel1Loop(),2000); }
+  }
+
+  function playSettlementVideo(callback){
+    const overlay=document.getElementById('settlementOverlay');
+    const video=document.getElementById('settlementVideo');
+    overlay.style.display='flex';
+    video.currentTime=0;
+    let settled=false;
+    const finish=()=>{
+      if(settled)return;
+      settled=true;
+      overlay.style.display='none';
+      video.pause();
+      if(callback)callback();
+    };
+    video.onended=finish;
+    overlay.onclick=(e)=>{if(e.target===overlay)finish();};
+    video.play().catch(()=>{});
+  }
+
+  // ==================== 第二关：三局两胜，局数实时显示 ====================
+  const spells=['Expelliarmus','Lumos Maxima','Avada Kedavra','Stupefy','Petrificus Totalus'];
+  let selectedSpell='',spellRound=1,spellWins=0,spellLosses=0;
+  let isSpellFinished = false;
+
+  function updateSpellUI() {
+    document.getElementById('spellRoundDisplay').innerText = spellRound;
+    document.getElementById('spellWinsDisplay').innerText = spellWins;
+    document.getElementById('spellLossesDisplay').innerText = spellLosses;
+    document.getElementById('currentSpellDisplay').innerText = selectedSpell || '未选择';
+  }
+
+  function similarity(a,b){
+    a=a.toLowerCase().replace(/[^a-z ]/g,'');b=b.toLowerCase().replace(/[^a-z ]/g,'');
+    if(!a||!b)return 0;
+    const m=a.length,n=b.length,dp=Array.from({length:m+1},(_,i)=>Array.from({length:n+1},(_,j)=>i?j?0:i:j));
+    for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)dp[i][j]=a[i-1]===b[j-1]?dp[i-1][j-1]:Math.min(dp[i-1][j],dp[i][j-1],dp[i-1][j-1])+1;
+    return 1-dp[m][n]/Math.max(m,n);
+  }
+
+  window.startDuel2 = function(){
+    tryPlayMusic();
+    document.getElementById('mainSection').classList.add('hidden-section');
+    document.getElementById('duel2Section').classList.remove('hidden-section');
+    spellRound=1; spellWins=0; spellLosses=0; isSpellFinished=false;
+    updateSpellUI();
+    document.getElementById('spellStatusText').innerText = '等待开始...';
+    loadSpellRound();
+  };
+
+  function loadSpellRound(){
+    const shuffled=[...spells].sort(()=>Math.random()-0.5);
+    const chosen=shuffled.slice(0,3);
+    document.getElementById('spellCards').innerHTML=chosen.map(s=>`<div class="spell-option px-5 py-3 bg-purple-950/40 border border-purple-500/40 rounded-xl cursor-pointer" onclick="selectSpell('${s}', this)">${s}</div>`).join('');
+    document.getElementById('activeSpell').innerText='⏳ 请挑选魔咒卡牌';
+    document.getElementById('recordBtn').disabled=true;
+    document.getElementById('recordBtn').classList.add('opacity-50','cursor-not-allowed');
+    selectedSpell='';
+    updateSpellUI();
+  }
+
+  window.selectSpell=function(spell,el){
+    document.querySelectorAll('.spell-option').forEach(e=>e.classList.remove('selected','border-amber-400','bg-purple-900/50'));
+    el.classList.add('selected','border-amber-400','bg-purple-900/50');
+    selectedSpell=spell;
+    document.getElementById('activeSpell').innerText=spell;
+    document.getElementById('recordBtn').disabled=false;
+    document.getElementById('recordBtn').classList.remove('opacity-50','cursor-not-allowed');
+    updateSpellUI();
+  };
+
+  window.startVoice = function(){
+    if(!selectedSpell)return alert('请先选择咒语');
+    if(isSpellFinished)return;
+    const recognition=new (window.SpeechRecognition||window.webkitSpeechRecognition)();
+    recognition.lang='en-US'; recognition.start();
+    document.getElementById('recordBtn').innerText='🎤 聆听中...'; document.getElementById('recordBtn').disabled=true;
+    document.getElementById('spellStatusText').innerText = '聆听中...';
+    recognition.onresult=(e)=>{
+      const spoken=e.results[0][0].transcript;
+      const sim=similarity(spoken,selectedSpell);
+      const success=sim>=0.7;
+      const fb=document.getElementById('spellFeedback'); fb.classList.remove('hidden');
+      fb.innerHTML=`<div class="text-lg font-bold ${success?'text-green-400':'text-red-400'}">${success?'✨ 咒语成功！':'💥 咒语失败'}</div><div class="text-sm text-gray-300">你说: "${spoken}" | 相似度: ${(sim*100).toFixed(1)}%</div>`;
+      if(success){spellWins++; sfxSuccess();} else {spellLosses++; sfxFail();}
+      document.getElementById('spellStatusText').innerText = success ? '成功击破！' : '法力不足...';
+      updateSpellUI();
+      spellRound++;
+      // 三局两胜判定
+      if(spellWins>=2 || spellLosses>=2 || spellRound>3){
+        isSpellFinished=true;
+        const win = spellWins >= 2;
+        window.passedDuel2 = win;
+        setTimeout(()=>{
+          alert(win ? '恭喜通过第二关！' : '挑战失败，重返主界面');
+          document.getElementById('duel2Section').classList.add('hidden-section');
+          document.getElementById('mainSection').classList.remove('hidden-section');
+          document.getElementById('sortBtn').classList.remove('hidden');
+          document.getElementById('duel1Btn').classList.add('hidden');
+          document.getElementById('duel2Btn').classList.add('hidden');
+          if (win) {
+            document.getElementById('duel3Btn').classList.remove('hidden');
+            document.getElementById('houseTip').innerText = '你已通过第二关！准备迎接最终试炼...';
+          } else {
+            document.getElementById('duel2Btn').classList.remove('hidden');
+            document.getElementById('houseTip').innerText = '咒语对决失败，可再次挑战第二关。';
+          }
+        },2000);
+      } else {
+        setTimeout(loadSpellRound,2000);
+      }
+    };
+    recognition.onerror=()=>{ alert('语音识别失败'); backToMain(); };
+  };
+
+  window.backToMain = function(){
+    document.getElementById('duel2Section').classList.add('hidden-section');
+    document.getElementById('mainSection').classList.remove('hidden-section');
+    document.getElementById('sortBtn').classList.remove('hidden');
+    document.getElementById('duel1Btn').classList.add('hidden');
+    document.getElementById('duel2Btn').classList.add('hidden');
+    document.getElementById('duel3Btn').classList.add('hidden');
+    if(window.passedDuel2){
+      document.getElementById('duel3Btn').classList.remove('hidden');
+    } else if(window.passedDuel1){
+      document.getElementById('duel2Btn').classList.remove('hidden');
+    } else {
+      document.getElementById('duel1Btn').classList.remove('hidden');
+    }
+  };
+
+  // ==================== 第三关 ====================
+  let dodgeGameActive=false,dodgeAnimFrame=null,dodgeHealth=5,dodgeMaxHealth=5,dodgeStartTime=0,dodgeDuration=30,lastHealTime=0,fireballs=[];
+  const MAX_FIREBALLS=5,FIREBALL_SPEED=6; let headRect=null,noFaceStartTime=null,NO_FACE_TIMEOUT=5;
+  class Fireball{
+    constructor(pos,dirX,dirY,speed){ this.x=pos[0];this.y=pos[1];const len=Math.hypot(dirX,dirY);this.vx=(dirX/len)*speed;this.vy=(dirY/len)*speed;this.radius=15; }
+    update(){ this.x+=this.vx; this.y+=this.vy; }
+    hits(r){ const cx=this.x,cy=this.y;const cx2=Math.max(r.x,Math.min(cx,r.x+r.w));const cy2=Math.max(r.y,Math.min(cy,r.y+r.h));return Math.hypot(cx-cx2,cy-cy2)<this.radius; }
+    isOut(){ return this.x<-50||this.x>690||this.y<-50||this.y>530; }
+  }
+  function getHeadRect(lms,w,h){ const xs=lms.map(l=>l.x*w),ys=lms.map(l=>l.y*h); return {x:Math.min(...xs),y:Math.min(...ys),w:Math.max(...xs)-Math.min(...xs),h:Math.max(...ys)-Math.min(...ys)}; }
+  function spawnFireball(target){ if(fireballs.length>=MAX_FIREBALLS)return; const side=Math.floor(Math.random()*4); let pos; if(side===0)pos=[Math.random()*640,0]; else if(side===1)pos=[Math.random()*640,480]; else if(side===2)pos=[0,Math.random()*480]; else pos=[640,Math.random()*480]; const dirX=target.x-pos[0],dirY=target.y-pos[1]; fireballs.push(new Fireball(pos,dirX,dirY,FIREBALL_SPEED)); }
+  function drawDodgeFrame(ctx,canvas){
+    if(!dodgeGameActive)return;
+    const now=performance.now()/1000,elapsed=now-dodgeStartTime;
+    const results=faceLandmarkerVideo.detectForVideo(video,performance.now());
+    let faceDetected=false,target={x:320,y:240};
+    if(results.faceLandmarks?.length){
+      faceDetected=true; headRect=getHeadRect(results.faceLandmarks[0],640,480);
+      target={x:headRect.x+headRect.w/2,y:headRect.y+headRect.h/2}; noFaceStartTime=null;
+    }else{
+      headRect=null; if(noFaceStartTime===null)noFaceStartTime=now;
+      if(now-noFaceStartTime>=NO_FACE_TIMEOUT){ dodgeGameActive=false; cancelAnimationFrame(dodgeAnimFrame); endDodgeGame(false); return; }
+    }
+    if(now-lastHealTime>=2&&dodgeHealth<dodgeMaxHealth){ dodgeHealth++; lastHealTime=now; }
+    if(faceDetected&&fireballs.length<MAX_FIREBALLS&&Math.random()<0.03) spawnFireball(target);
+    for(let i=fireballs.length-1;i>=0;i--){
+      const fb=fireballs[i]; fb.update();
+      if(fb.isOut()){ fireballs.splice(i,1); continue; }
+      if(headRect&&fb.hits(headRect)){ dodgeHealth--; sfxHit(); fireballs.splice(i,1); if(dodgeHealth<=0){ dodgeGameActive=false; cancelAnimationFrame(dodgeAnimFrame); endDodgeGame(false); return; } }
+    }
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.save(); ctx.translate(canvas.width,0); ctx.scale(-1,1); ctx.drawImage(video,0,0,canvas.width,canvas.height); ctx.restore();
+    if(headRect){ const mx=canvas.width-headRect.x-headRect.w; ctx.strokeStyle='#0f0'; ctx.lineWidth=2; ctx.strokeRect(mx,headRect.y,headRect.w,headRect.h); }
+    for(const fb of fireballs){ const dx=canvas.width-fb.x; ctx.beginPath(); ctx.arc(dx,fb.y,fb.radius,0,Math.PI*2); ctx.fillStyle='#f00'; ctx.fill(); ctx.strokeStyle='#ffa500'; ctx.lineWidth=2; ctx.stroke(); }
+    document.getElementById('dodgeHealth').innerText=`❤️ 血量: ${dodgeHealth}/${dodgeMaxHealth}`;
+    document.getElementById('healthBar').style.width=`${(dodgeHealth/dodgeMaxHealth)*100}%`;
+    document.getElementById('dodgeTimer').innerText=`⏱ 剩余 ${Math.max(0,Math.ceil(dodgeDuration-elapsed))} 秒`;
+    if(elapsed>=dodgeDuration){ dodgeGameActive=false; cancelAnimationFrame(dodgeAnimFrame); endDodgeGame(true); }
+    else dodgeAnimFrame=requestAnimationFrame(()=>drawDodgeFrame(ctx,canvas));
+  }
+  function endDodgeGame(won){
+    document.getElementById('duel3Section').classList.add('hidden-section');
+    document.getElementById('mainSection').classList.remove('hidden-section');
+    fireballs=[]; if(won)sfxSuccess(); else sfxFail();
+    alert(won?'🎉 恭喜！你成功躲过了所有火球，通过第三关！':'💀 你被火球击中了... 挑战失败');
+    document.getElementById('duel1Btn').classList.add('hidden');
+    document.getElementById('duel2Btn').classList.add('hidden');
+    document.getElementById('duel3Btn').classList.add('hidden');
+    document.getElementById('sortBtn').classList.remove('hidden');
+    document.getElementById('normalUI').classList.remove('hidden');
+    document.getElementById('houseTip').classList.remove('hidden');
+    const cam=document.getElementById('normalCamera');
+    if(cam.parentElement.id==='gameCamera') document.getElementById('normalUI').insertBefore(cam,document.getElementById('normalUI').firstChild);
+    document.getElementById('gameArea').classList.add('hidden');
+    document.removeEventListener('keydown',window.dodgeKeyHandler);
+    window.passedDuel1 = window.passedDuel2 = false;
+    document.getElementById('houseTip').innerText = '所有试炼已完成！戴上分院帽可以再次开始冒险。';
+  }
+  window.startDuel3 = function(){
+    tryPlayMusic();
+    document.getElementById('mainSection').classList.add('hidden-section');
+    document.getElementById('duel3Section').classList.remove('hidden-section');
+    const canvas=document.getElementById('dodgeCanvas'),ctx=canvas.getContext('2d');
+    dodgeHealth=dodgeMaxHealth; dodgeStartTime=performance.now()/1000; lastHealTime=dodgeStartTime; fireballs=[]; headRect=null; noFaceStartTime=null; dodgeGameActive=true;
+    document.getElementById('dodgeHealth').innerText=`❤️ 血量: ${dodgeHealth}/${dodgeMaxHealth}`; document.getElementById('healthBar').style.width='100%'; document.getElementById('dodgeTimer').innerText=`⏱ 剩余 ${dodgeDuration} 秒`;
+    window.dodgeKeyHandler=(e)=>{ if(e.key==='q'||e.key==='Q'){ dodgeGameActive=false; cancelAnimationFrame(dodgeAnimFrame); endDodgeGame(false); } };
+    document.addEventListener('keydown',window.dodgeKeyHandler);
+    dodgeAnimFrame=requestAnimationFrame(()=>drawDodgeFrame(ctx,canvas));
+  };
+
+  // 初始隐藏按钮
+  document.getElementById('duel1Btn').classList.add('hidden');
+  document.getElementById('duel2Btn').classList.add('hidden');
+  document.getElementById('duel3Btn').classList.add('hidden');
+  window.passedDuel1 = false;
+  window.passedDuel2 = false;
+</script>
+</body>
+</html>
