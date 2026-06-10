@@ -7,37 +7,46 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Noto+Serif+SC:wght@400;700;900&display=swap" rel="stylesheet">
   <style>
+    @font-face {
+      font-family: 'Harry';
+      src: url('assets/fonts/HARRY.TTF') format('truetype');
+    }
+    @font-face {
+      font-family: 'ChineseMagic';
+      src: url('assets/fonts/zh.ttf') format('truetype');
+    }
     body { 
-      font-family: 'Noto Serif SC', serif; 
-      background: url('assets/background.jpg') center/cover no-repeat, linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 50%, #16213e 100%);
+      font-family: 'ChineseMagic', 'Noto Serif SC', serif; 
+      background: url('assets/background.jpg') center/cover no-repeat, linear-gradient(135deg, #050508 0%, #0d0d1a 50%, #0a0a12 100%);
       overflow: hidden; min-height: 100vh; display: flex; align-items: center; justify-content: center;
       margin: 0;
     }
     .game-container {
       width: 1280px; height: 720px;
-      background: linear-gradient(180deg, rgba(10,10,26,0.25) 0%, rgba(26,26,46,0.35) 50%, rgba(22,33,62,0.25) 100%);
-      border: 2px solid rgba(192,170,110,0.3); border-radius: 15px;
-      box-shadow: 0 0 50px rgba(192,170,110,0.15); position: relative; overflow: hidden;
+      background: linear-gradient(180deg, rgba(5,5,8,0.8) 0%, rgba(10,10,18,0.7) 50%, rgba(5,5,10,0.8) 100%);
+      border: 2px solid rgba(139,115,66,0.4); border-radius: 15px;
+      box-shadow: 0 0 50px rgba(139,115,66,0.1); position: relative; overflow: hidden;
     }
     .stars, .magic-particles { position: absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; }
-    .star { position: absolute; background: white; border-radius: 50%; animation: twinkle 3s infinite; }
-    @keyframes twinkle { 0%,100%{opacity:0.3} 50%{opacity:1} }
-    @keyframes floatUp { 0%{transform:translateY(720px) rotate(0deg);opacity:0} 10%{opacity:0.6} 90%{opacity:0.6} 100%{transform:translateY(-50px) rotate(360deg);opacity:0} }
+    .star { position: absolute; background: #8b7342; border-radius: 50%; animation: twinkle 3s infinite; }
+    @keyframes twinkle { 0%,100%{opacity:0.2} 50%{opacity:0.6} }
+    @keyframes floatUp { 0%{transform:translateY(720px) rotate(0deg);opacity:0} 10%{opacity:0.4} 90%{opacity:0.4} 100%{transform:translateY(-50px) rotate(360deg);opacity:0} }
     .candle { animation: float 4s ease-in-out infinite; }
     @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-15px)} }
     .btn-magic {
-      background: linear-gradient(135deg, #2d1b4e 0%, #4a2c7a 50%, #2d1b4e 100%);
-      border:2px solid rgba(192,170,110,0.6); border-radius:50px; padding:14px 50px;
-      font-size:18px; font-weight:700; color:#c0aa6e; letter-spacing:6px; cursor:pointer;
-      transition:0.3s; box-shadow:0 0 20px rgba(192,170,110,0.3);
+      background: linear-gradient(135deg, #1a0a2e 0%, #2d154e 50%, #1a0a2e 100%);
+      border:2px solid rgba(139,115,66,0.5); border-radius:50px; padding:14px 50px;
+      font-size:18px; font-weight:700; color:#8b7342; letter-spacing:6px; cursor:pointer;
+      transition:0.3s; box-shadow:0 0 15px rgba(139,115,66,0.2);
     }
-    .btn-magic:hover { background:linear-gradient(135deg,#3d2b5e 0%,#5a3c8a 50%,#3d2b5e 100%); transform:translateY(-3px); }
+    .btn-magic:hover { background:linear-gradient(135deg,#2a153e 0%,#3d255e 50%,#2a153e 100%); transform:translateY(-3px); box-shadow:0 0 25px rgba(139,115,66,0.3); }
     .hidden-section { display: none !important; }
-    .camera-box { border:2px solid rgba(192,170,110,0.5); border-radius:12px; overflow:hidden; background:black; }
+    .camera-box { border:2px solid rgba(139,115,66,0.4); border-radius:12px; overflow:hidden; background:#0a0a0f; }
     .spell-option { transition:0.3s; cursor:pointer; }
-    .spell-option.selected { border-color:#ffd700; box-shadow:0 0 20px rgba(255,215,0,0.5); }
-    .info-panel { background: rgba(0,0,0,0.5); border: 1px solid rgba(255,215,0,0.3); border-radius: 12px; padding: 16px; }
-    .dodge-canvas { border:2px solid rgba(255,215,0,0.5); border-radius:12px; }
+    .spell-option.selected { border-color:#8b7342; box-shadow:0 0 15px rgba(139,115,66,0.4); }
+    .info-panel { background: rgba(5,5,8,0.8); border: 1px solid rgba(139,115,66,0.3); border-radius: 12px; padding: 16px; }
+    .dodge-canvas { border:2px solid rgba(139,115,66,0.4); border-radius:12px; }
+    .english-text { font-family: 'Harry', serif; color: #8b7342; }
   </style>
 </head>
 <body>
@@ -52,26 +61,26 @@
 
   <!-- 主界面 -->
   <div id="mainSection" class="relative z-10 flex flex-col items-center pt-8">
-    <div class="flex justify-center gap-16 mb-2">
-      <div class="candle"><div class="candle-flame" style="width:15px;height:25px;background:linear-gradient(to top,#ff6b35,#ffd700);border-radius:50%;"></div><div class="candle-body" style="width:20px;height:60px;background:#c49464;border-radius:3px;"></div></div>
-      <div class="candle"><div class="candle-flame" style="width:15px;height:25px;background:linear-gradient(to top,#ff6b35,#ffd700);border-radius:50%;"></div><div class="candle-body" style="width:20px;height:60px;background:#c49464;border-radius:3px;"></div></div>
-      <div class="candle"><div class="candle-flame" style="width:15px;height:25px;background:linear-gradient(to top,#ff6b35,#ffd700);border-radius:50%;"></div><div class="candle-body" style="width:20px;height:60px;background:#c49464;border-radius:3px;"></div></div>
-      <div class="candle"><div class="candle-flame" style="width:15px;height:25px;background:linear-gradient(to top,#ff6b35,#ffd700);border-radius:50%;"></div><div class="candle-body" style="width:20px;height:60px;background:#c49464;border-radius:3px;"></div></div>
-      <div class="candle"><div class="candle-flame" style="width:15px;height:25px;background:linear-gradient(to top,#ff6b35,#ffd700);border-radius:50%;"></div><div class="candle-body" style="width:20px;height:60px;background:#c49464;border-radius:3px;"></div></div>
+    <div class="flex justify-center gap-12 mb-2">
+      <img src="assets/蜡烛.png" class="candle" style="width:60px;height:90px;object-fit:contain;">
+      <img src="assets/蜡烛.png" class="candle" style="width:60px;height:90px;object-fit:contain;">
+      <img src="assets/蜡烛.png" class="candle" style="width:60px;height:90px;object-fit:contain;">
+      <img src="assets/蜡烛.png" class="candle" style="width:60px;height:90px;object-fit:contain;">
+      <img src="assets/蜡烛.png" class="candle" style="width:60px;height:90px;object-fit:contain;">
     </div>
 
-    <h1 class="text-5xl font-black text-amber-400 tracking-widest mb-1">HOGWARTS</h1>
-    <p class="text-xl text-amber-600 tracking-widest">⚔️ 魔法觉醒 ⚔️</p>
+    <h1 class="text-5xl font-black tracking-widest mb-1 english-text" style="color:#8b7342;">HOGWARTS</h1>
+    <p class="text-xl tracking-widest" style="color:#6b5a3a;">⚔️ 魔法觉醒 ⚔️</p>
 
     <div id="normalUI" class="flex flex-col items-center gap-4 mt-4">
-      <input type="text" id="playerName" placeholder="请输入你的魔法昵称" class="px-5 py-2.5 text-center rounded-full bg-gray-900 text-amber-400 border border-amber-500/40 w-72 text-lg font-bold">
+      <input type="text" id="playerName" placeholder="请输入你的魔法昵称" class="px-5 py-2.5 text-center rounded-full bg-gray-950 border border-amber-800/50 w-72 text-lg font-bold" style="color:#8b7342;">
       <div class="camera-box w-96 h-56 relative" id="normalCamera">
         <video id="webcam" autoplay playsinline class="w-full h-full object-cover"></video>
         <canvas id="snapshotCanvas" class="hidden"></canvas>
       </div>
     </div>
 
-    <p class="text-amber-300 text-sm mt-3" id="houseTip">戴上分院帽，点击下方按钮开启分院仪式...</p>
+    <p class="text-sm mt-3" id="houseTip" style="color:#8b7342;">戴上分院帽，点击下方按钮开启分院仪式...</p>
 
     <div class="flex gap-4 mt-4">
       <button class="btn-magic" id="sortBtn" onclick="startSorting()">⚡ 开启分院仪式</button>
@@ -85,7 +94,7 @@
     <!-- 第一关游戏区 -->
     <div id="gameArea" class="hidden flex items-start justify-center gap-6 mt-4 w-full px-8">
       <div class="camera-box w-96 h-56 relative" id="gameCamera"></div>
-      <div id="gameInfoPanel" class="info-panel flex-1 max-w-md text-amber-300">
+      <div id="gameInfoPanel" class="info-panel flex-1 max-w-md" style="color:#8b7342;">
         <div id="duel1Info"></div>
       </div>
     </div>
@@ -96,25 +105,25 @@
     <div class="flex gap-8 items-start">
       <!-- 左侧：咒语卡片和录音按钮 -->
       <div class="flex flex-col items-center">
-        <h2 class="text-3xl font-black text-purple-400 mb-4">⚔️ 第二关：咒语对决 ⚔️</h2>
-        <p class="text-gray-400 mb-6">选择一张魔咒卡牌，然后大声念出它！</p>
+        <h2 class="text-3xl font-black mb-4" style="color:#8b7342;">⚔️ 第二关：咒语对决 ⚔️</h2>
+        <p class="mb-6" style="color:#6b5a3a;">选择一张魔咒卡牌，然后大声念出它！</p>
         <div id="spellCards" class="flex gap-6 mb-8"></div>
         <div class="bg-black/40 border border-purple-500/40 p-6 rounded-xl flex flex-col items-center gap-3">
-          <p class="text-white font-mono text-xl" id="activeSpell">⏳ 请挑选魔咒卡牌</p>
+          <p class="text-white font-mono text-xl english-text" id="activeSpell">⏳ 请挑选魔咒卡牌</p>
           <button id="recordBtn" class="btn-magic opacity-50 cursor-not-allowed" disabled onclick="startVoice()">🎤 注入法力</button>
           <div id="spellFeedback" class="hidden text-center"></div>
         </div>
         <button class="btn-magic mt-6" onclick="backToMain()">🏠 返回主界面</button>
       </div>
       <!-- 右侧：局数、比分、状态面板 -->
-      <div id="duel2InfoPanel" class="info-panel w-56 text-amber-300 mt-20">
+      <div id="duel2InfoPanel" class="info-panel w-56 mt-20" style="color:#8b7342;">
         <div class="text-lg font-bold mb-2">第 <span id="spellRoundDisplay">1</span> 局</div>
         <div class="flex justify-between mb-2">
           <span style="color:#4ade80;">胜: <span id="spellWinsDisplay">0</span></span>
           <span style="color:#f87171;">负: <span id="spellLossesDisplay">0</span></span>
         </div>
         <div class="text-sm text-gray-400 mt-2">当前咒语：</div>
-        <div id="currentSpellDisplay" class="text-white font-mono text-sm break-words">未选择</div>
+        <div id="currentSpellDisplay" class="text-white font-mono text-sm break-words english-text">未选择</div>
         <div id="spellStatusText" class="text-xs text-white mt-2">等待开始...</div>
       </div>
     </div>
@@ -122,11 +131,11 @@
 
   <!-- 第三关 -->
   <div id="duel3Section" class="hidden-section absolute inset-0 flex flex-col items-center justify-center z-30">
-    <h2 class="text-3xl font-black text-red-400 mb-2">🔥 第三关：躲避火球 🔥</h2>
-    <p class="text-gray-400 mb-4">移动你的头部，躲避飞来的火球！坚持30秒</p>
+    <h2 class="text-3xl font-black mb-2" style="color:#8b7342;">🔥 第三关：躲避火球 🔥</h2>
+    <p class="mb-4" style="color:#6b5a3a;">移动你的头部，躲避飞来的火球！坚持30秒</p>
     <div class="flex gap-8 items-start">
       <canvas id="dodgeCanvas" class="dodge-canvas" width="640" height="480"></canvas>
-      <div class="info-panel w-56 text-amber-300">
+      <div class="info-panel w-56" style="color:#8b7342;">
         <div class="text-lg font-bold mb-2" id="dodgeHealth">❤️ 血量: 5/5</div>
         <div class="w-full bg-gray-700 rounded-full h-4 mb-2">
           <div id="healthBar" class="bg-red-500 h-4 rounded-full" style="width:100%"></div>
@@ -153,15 +162,13 @@
 <script type="module">
   // ==================== 音频 ====================
   const bgMusic = document.getElementById('bgMusic');
-  function switchMusic(track) {
-    const source = bgMusic.querySelector('source');
-    if (source.getAttribute('src') !== track) {
-      source.setAttribute('src', track);
-      bgMusic.load();
+  let musicStarted = false;
+  function tryPlayMusic() {
+    if (!musicStarted) {
+      bgMusic.play().then(() => { musicStarted = true; bgMusic.volume = 0.4; }).catch(() => {});
     }
-    bgMusic.play().then(() => { bgMusic.volume = 0.4; }).catch(() => {});
   }
-  document.body.addEventListener('click', () => switchMusic('assets/music/首页.mp3'), { once: true });
+  document.body.addEventListener('click', tryPlayMusic, { once: true });
 
   const AudioCtx = window.AudioContext || window.webkitAudioContext;
   let audioCtx = null;
@@ -234,7 +241,7 @@
   }
 
   window.startSorting = async function() {
-    switchMusic('assets/music/首页.mp3');
+    tryPlayMusic();
     const name=document.getElementById('playerName').value.trim();
     if(!name){alert('请输入昵称');return;}
     document.getElementById('houseTip').innerText='分院帽正在审视你的灵魂...';
@@ -249,7 +256,7 @@
       if(sim>bestSim){bestSim=sim;best=h;}
     }
     document.getElementById('sortingResult').classList.remove('hidden');
-    document.getElementById('sortingResult').innerHTML=`<h3 class="text-2xl font-black text-amber-400">🎩 ${best} 学院</h3><p class="text-sm text-gray-300">面部特征解析完成</p>`;
+    document.getElementById('sortingResult').innerHTML=`<h3 class="text-2xl font-black text-amber-400">🎩 <span class="english-text">${best}</span> 学院</h3><p class="text-sm text-gray-300">面部特征解析完成</p>`;
     document.getElementById('houseTip').innerText=`欢迎，${name}！你属于【${best}】。`;
     document.getElementById('duel1Btn').classList.remove('hidden');
     window.passedDuel1 = window.passedDuel2 = false;
@@ -288,7 +295,7 @@
   }
 
   window.startDuel1 = function() {
-    switchMusic('assets/music/第一关.mp3');
+    tryPlayMusic();
     duel1State={playerWins:0,monsterWins:0,round:1,rounds:[],active:true,finished:false};
     document.getElementById('normalUI').classList.add('hidden');
     document.getElementById('houseTip').classList.add('hidden');
@@ -305,7 +312,7 @@
     if(!duel1State.active)return;
     countdown=3;
     const info=document.getElementById('duel1Info');
-    info.innerHTML=`<div class="text-lg font-bold mb-2">第 ${duel1State.round} 局</div><div class="flex justify-between mb-2"><span style="color:#4ade80;">你: ${duel1State.playerWins}胜</span><span style="color:#f87171;">三头怪: ${duel1State.monsterWins}胜</span></div><div id="cd" class="text-2xl text-yellow-400 mb-2">倒计时: ${countdown}</div><div id="gestureText" class="text-lg text-amber-300">检测手势...</div>`;
+    info.innerHTML=`<div class="text-lg font-bold mb-2" style="color:#8b7342;">第 ${duel1State.round} 局</div><div class="flex justify-between mb-2"><span style="color:#6b8e23;">你: ${duel1State.playerWins}胜</span><span style="color:#8b0000;">三头怪: ${duel1State.monsterWins}胜</span></div><div id="cd" class="text-2xl mb-2" style="color:#8b7342;">倒计时: ${countdown}</div><div id="gestureText" class="text-lg" style="color:#8b7342;">检测手势...</div>`;
     clearInterval(duel1Interval);clearInterval(duel1Timer);
     duel1Interval=setInterval(()=>{
       const res=handLandmarker.detectForVideo(video,performance.now());
@@ -318,8 +325,8 @@
       if(countdown<=0){
         clearInterval(duel1Timer);clearInterval(duel1Interval);
         const{player,monster,result}=playRound();
-        let color=result==='player'?'#4ade80':(result==='monster'?'#f87171':'#fbbf24');
-        info.innerHTML=`<div style="color:${color}" class="text-xl font-bold">${result==='player'?'你赢了！':(result==='monster'?'三头怪赢了！':'平局！')}</div><div class="text-sm">你出 ${player} vs 三头怪 ${monster}</div><div class="mt-2">比分：你 ${duel1State.playerWins} : ${duel1State.monsterWins}</div>`;
+        let color=result==='player'?'#6b8e23':(result==='monster'?'#8b0000':'#8b7342');
+        info.innerHTML=`<div style="color:${color}" class="text-xl font-bold">${result==='player'?'你赢了！':(result==='monster'?'三头怪赢了！':'平局！')}</div><div class="text-sm" style="color:#6b5a3a;">你出 ${player} vs 三头怪 ${monster}</div><div class="mt-2" style="color:#8b7342;">比分：你 ${duel1State.playerWins} : ${duel1State.monsterWins}</div>`;
         // 非平局时播放对应结算视频，平局直接继续
         if(result==='player'){
           playSettlementVideo('assets/videos/第一关-石头剪刀布-魔法师每次石头剪刀布胜利画面.mp4', ()=>proceedAfterDuel1Round(info));
@@ -336,8 +343,7 @@
     if(duel1State.finished){
       const win=duel1State.playerWins>duel1State.monsterWins;
       setTimeout(()=>{
-        switchMusic('assets/music/首页.mp3');
-        info.innerHTML=`<div class="text-2xl font-bold">${win?'🎉 通过第一关！':'💀 第一关失败'}</div>`;
+        info.innerHTML=`<div class="text-2xl font-bold" style="color:${win?'#6b8e23':'#8b0000'}">${win?'🎉 通过第一关！':'💀 第一关失败'}</div>`;
         const cam=document.getElementById('normalCamera');
         document.getElementById('normalUI').insertBefore(cam,document.getElementById('normalUI').firstChild);
         document.getElementById('gameArea').classList.add('hidden');
@@ -392,7 +398,7 @@
   }
 
   window.startDuel2 = function(){
-    switchMusic('assets/music/第二关.mp3');
+    tryPlayMusic();
     document.getElementById('mainSection').classList.add('hidden-section');
     document.getElementById('duel2Section').classList.remove('hidden-section');
     spellRound=1; spellWins=0; spellLosses=0; isSpellFinished=false;
@@ -404,7 +410,7 @@
   function loadSpellRound(){
     const shuffled=[...spells].sort(()=>Math.random()-0.5);
     const chosen=shuffled.slice(0,3);
-    document.getElementById('spellCards').innerHTML=chosen.map(s=>`<div class="spell-option text-white px-5 py-3 bg-purple-950/40 border border-purple-500/40 rounded-xl cursor-pointer" onclick="selectSpell('${s}', this)">${s}</div>`).join('');
+    document.getElementById('spellCards').innerHTML=chosen.map(s=>`<div class="spell-option text-white px-5 py-3 bg-purple-950/40 border border-purple-500/40 rounded-xl cursor-pointer english-text" onclick="selectSpell('${s}', this)">${s}</div>`).join('');
     document.getElementById('activeSpell').innerText='⏳ 请挑选魔咒卡牌';
     document.getElementById('recordBtn').disabled=true;
     document.getElementById('recordBtn').classList.add('opacity-50','cursor-not-allowed');
@@ -446,7 +452,6 @@
           const win = spellWins >= 2;
           window.passedDuel2 = win;
           setTimeout(()=>{
-            switchMusic('assets/music/首页.mp3');
             alert(win ? '恭喜通过第二关！' : '挑战失败，重返主界面');
             document.getElementById('duel2Section').classList.add('hidden-section');
             document.getElementById('mainSection').classList.remove('hidden-section');
@@ -476,7 +481,6 @@
   };
 
   window.backToMain = function(){
-    switchMusic('assets/music/首页.mp3');
     document.getElementById('duel2Section').classList.add('hidden-section');
     document.getElementById('mainSection').classList.remove('hidden-section');
     document.getElementById('sortBtn').classList.remove('hidden');
@@ -573,7 +577,6 @@
     document.getElementById('mainSection').classList.remove('hidden-section');
     fireballs=[];
     const finishDodge=()=>{
-      switchMusic('assets/music/首页.mp3');
       if(won)sfxSuccess(); else sfxFail();
       alert(won?'🎉 恭喜！你成功躲过了所有火球，通过第三关！':'💀 你被火球击中了... 挑战失败');
       document.getElementById('duel1Btn').classList.add('hidden');
@@ -596,7 +599,7 @@
     }
   }
   window.startDuel3 = function(){
-    switchMusic('assets/music/第三关.mp3');
+    tryPlayMusic();
     document.getElementById('mainSection').classList.add('hidden-section');
     document.getElementById('duel3Section').classList.remove('hidden-section');
     const canvas=document.getElementById('dodgeCanvas'),ctx=canvas.getContext('2d');
