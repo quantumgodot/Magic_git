@@ -31,7 +31,8 @@
     .star { position: absolute; background: #8b7342; border-radius: 50%; animation: twinkle 3s infinite; }
     @keyframes twinkle { 0%,100%{opacity:0.2} 50%{opacity:0.6} }
     @keyframes floatUp { 0%{transform:translateY(720px) rotate(0deg);opacity:0} 10%{opacity:0.4} 90%{opacity:0.4} 100%{transform:translateY(-50px) rotate(360deg);opacity:0} }
-    .candle { animation: float 4s ease-in-out infinite; }
+    .candle-wrapper { animation: float 4s ease-in-out infinite; display:inline-block; }
+    .candle-img { width:48px; height:80px; object-fit:contain; filter:drop-shadow(0 4px 12px rgba(0,0,0,0.5)) drop-shadow(0 0 15px rgba(255,180,50,0.3)); }
     @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-15px)} }
     .btn-magic {
       background: linear-gradient(135deg, #1a0a2e 0%, #2d154e 50%, #1a0a2e 100%);
@@ -62,11 +63,11 @@
   <!-- 主界面 -->
   <div id="mainSection" class="relative z-10 flex flex-col items-center pt-8">
     <div class="flex justify-center gap-12 mb-2">
-      <img src="assets/蜡烛.png" class="candle" style="width:60px;height:90px;object-fit:contain;">
-      <img src="assets/蜡烛.png" class="candle" style="width:60px;height:90px;object-fit:contain;">
-      <img src="assets/蜡烛.png" class="candle" style="width:60px;height:90px;object-fit:contain;">
-      <img src="assets/蜡烛.png" class="candle" style="width:60px;height:90px;object-fit:contain;">
-      <img src="assets/蜡烛.png" class="candle" style="width:60px;height:90px;object-fit:contain;">
+      <div class="candle-wrapper"><img src="assets/蜡烛.png" class="candle-img"></div>
+      <div class="candle-wrapper"><img src="assets/蜡烛.png" class="candle-img"></div>
+      <div class="candle-wrapper"><img src="assets/蜡烛.png" class="candle-img"></div>
+      <div class="candle-wrapper"><img src="assets/蜡烛.png" class="candle-img"></div>
+      <div class="candle-wrapper"><img src="assets/蜡烛.png" class="candle-img"></div>
     </div>
 
     <h1 class="text-5xl font-black tracking-widest mb-1 english-text" style="color:#8b7342;">HOGWARTS</h1>
