@@ -1,0 +1,23 @@
+# 桌面宠物 Rick — 依赖列表
+# Python >= 3.10
+
+# GUI 框架（透明无边框窗口）
+PyQt6>=6.5.0
+
+# 图像处理（精灵图生成 + 摄像头）
+Pillow>=10.0.0
+opencv-python>=4.8.0
+numpy>=1.24.0
+
+# 面部识别（复用 magic 项目的 MediaPipe 方案，可选）
+mediapipe>=0.10.0
+
+# LLM 对话（可选）
+openai>=1.0.0
+
+# 联网搜索（可选）
+requests>=2.28.0
+beautifulsoup4>=4.12.0
+
+# 音效（合成音效不需要额外依赖；如需播放 MP3/WAV 可安装 pydub）
+# pydub>=0.25.0

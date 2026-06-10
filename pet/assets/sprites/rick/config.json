@@ -1,0 +1,46 @@
+{
+  "name": "Rick Sanchez",
+  "description": "Rick and Morty desktop pet sprite configuration",
+  "frame_size": {
+    "width": 128,
+    "height": 128
+  },
+  "animations": {
+    "idle": {
+      "frames": 4,
+      "fps": 4,
+      "sheet": "idle.png",
+      "description": "待机呼吸动画"
+    },
+    "walk": {
+      "frames": 8,
+      "fps": 10,
+      "sheet": "walk.png",
+      "description": "行走动画（右向，引擎自动翻转左向）"
+    },
+    "fall": {
+      "frames": 4,
+      "fps": 8,
+      "sheet": "fall.png",
+      "description": "下落动画"
+    },
+    "grabbed": {
+      "frames": 2,
+      "fps": 4,
+      "sheet": "grabbed.png",
+      "description": "被拖拽时的动画"
+    },
+    "surprised": {
+      "frames": 2,
+      "fps": 4,
+      "sheet": "surprised.png",
+      "description": "惊讶反应动画"
+    },
+    "sleep": {
+      "frames": 2,
+      "fps": 2,
+      "sheet": "sleep.png",
+      "description": "睡觉动画"
+    }
+  }
+}
