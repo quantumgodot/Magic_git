@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>哈利波特魔法游戏 - 开始界面</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Noto+Serif+SC:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+body { 
+  font-family: 'Noto Serif SC', serif; 
+  background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 50%, #16213e 100%);
+  overflow: hidden;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.game-container {
+  width: 1280px;
+  height: 720px;
+  background: linear-gradient(180deg, rgba(10, 10, 26, 0.9) 0%, rgba(26, 26, 46, 0.95) 50%, rgba(22, 33, 62, 0.9) 100%);
+  border: 2px solid rgba(192, 170, 110, 0.3);
+  border-radius: 15px;
+  box-shadow: 0 0 50px rgba(192, 170, 110, 0.15), 0 0 100px rgba(192, 170, 110, 0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+/* 星空背景 */
+.stars {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.star {
+  position: absolute;
+  background: white;
+  border-radius: 50%;
+  animation: twinkle 3s ease-in-out infinite;
+}
+@keyframes twinkle {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+/* 霍格沃茨城堡 */
+.castle {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 300px;
+  opacity: 0.7;
+}
+
+/* 浮动蜡烛 */
+.candles {
+  position: absolute;
+  top: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 80px;
+}
+.candle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: float 4s ease-in-out infinite;
+}
+.candle:nth-child(2) { animation-delay: 0.5s; }
+.candle:nth-child(3) { animation-delay: 1s; }
+.candle:nth-child(4) { animation-delay: 1.5s; }
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-15px); }
+}
+.candle-body {
+  width: 20px;
+  height: 60px;
+  background: linear-gradient(90deg, #d4a574 0%, #c49464 50%, #d4a574 100%);
+  border-radius: 3px;
+}
+.candle-flame {
+  width: 15px;
+  height: 25px;
+  background: linear-gradient(to top, #ff6b35 0%, #ffd700 50%, #fffacd 100%);
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  animation: flicker 0.3s ease-in-out infinite alternate;
+  filter: blur(1px);
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+}
+@keyframes flicker {
+  0% { transform: scale(1) rotate(-2deg); }
+  100% { transform: scale(1.1) rotate(2deg); }
+}
+
+/* 标题 */
+.title-section {
+  text-align: center;
+  padding-top: 60px;
+  position: relative;
+  z-index: 10;
+}
+.game-title {
+  font-size: 48px;
+  font-weight: 900;
+  color: #c0aa6e;
+  text-shadow: 0 0 20px rgba(192, 170, 110, 0.5), 0 0 40px rgba(192, 170, 110, 0.3);
+  letter-spacing: 8px;
+  margin-bottom: 5px;
+  animation: glow 2s ease-in-out infinite alternate;
+}
+@keyframes glow {
+  0% { text-shadow: 0 0 20px rgba(192, 170, 110, 0.5), 0 0 40px rgba(192, 170, 110, 0.3); }
+  100% { text-shadow: 0 0 30px rgba(192, 170, 110, 0.8), 0 0 60px rgba(192, 170, 110, 0.5); }
+}
+.sub-title {
+  font-size: 20px;
+  color: #8b7355;
+  letter-spacing: 4px;
+  font-weight: 500;
+}
+
+/* 开始按钮 */
+.start-button {
+  position: relative;
+  z-index: 10;
+  margin-top: 20px;
+  text-align: center;
+}
+.btn-magic {
+  background: linear-gradient(135deg, #2d1b4e 0%, #4a2c7a 50%, #2d1b4e 100%);
+  border: 2px solid rgba(192, 170, 110, 0.6);
+  border-radius: 50px;
+  padding: 14px 50px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #c0aa6e;
+  letter-spacing: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 20px rgba(192, 170, 110, 0.3);
+}
+.btn-magic:hover {
+  background: linear-gradient(135deg, #3d2b5e 0%, #5a3c8a 50%, #3d2b5e 100%);
+  box-shadow: 0 0 40px rgba(192, 170, 110, 0.6), 0 0 60px rgba(192, 170, 110, 0.3);
+  transform: translateY(-3px);
+}
+
+/* 底部装饰 */
+.bottom-decoration {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 80px;
+  background: linear-gradient(to top, rgba(10, 10, 26, 0.9) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+/* 魔法粒子 */
+.magic-particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+}
+.particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: #c0aa6e;
+  border-radius: 50%;
+  opacity: 0.6;
+  animation: floatUp 8s linear infinite;
+}
+@keyframes floatUp {
+  0% {
+    transform: translateY(720px) rotate(0deg);
+    opacity: 0;
+  }
+  10% { opacity: 0.6; }
+  90% { opacity: 0.6; }
+  100% {
+    transform: translateY(-50px) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* 猫头鹰 */
+.owl {
+  position: absolute;
+  top: 100px;
+  right: 150px;
+  font-size: 32px;
+  opacity: 0.5;
+  animation: fly 15s linear infinite;
+}
+@keyframes fly {
+  0% { transform: translateX(0) translateY(0); }
+  25% { transform: translateX(-200px) translateY(-30px); }
+  50% { transform: translateX(-400px) translateY(10px); }
+  75% { transform: translateX(-200px) translateY(-20px); }
+  100% { transform: translateX(0) translateY(0); }
+}
+
+/* 闪电效果 */
+.lightning {
+  position: absolute;
+  top: 30px;
+  right: 200px;
+  font-size: 24px;
+  color: #ffd700;
+  opacity: 0;
+  animation: lightningFlash 8s ease-in-out infinite;
+}
+@keyframes lightningFlash {
+  0%, 90%, 100% { opacity: 0; }
+  91% { opacity: 1; }
+  92% { opacity: 0; }
+  93% { opacity: 1; }
+  94% { opacity: 0; }
+}
+
+/* 选择学院提示 */
+.house-tip {
+  text-align: center;
+  margin-top: 12px;
+  color: #8b7355;
+  font-size: 14px;
+  letter-spacing: 2px;
+}
+</style>
+</head>
+<body>
+
+<div class="game-container">
+  <div class="stars">
+    <script>
+      for (let i = 0; i < 50; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        star.style.left = Math.random() * 100 + '%';
+        star.style.top = Math.random() * 100 + '%';
+        star.style.width = Math.random() * 3 + 1 + 'px';
+        star.style.height = star.style.width;
+        star.style.animationDelay = Math.random() * 3 + 's';
+        document.querySelector('.stars').appendChild(star);
+      }
+    </script>
+  </div>
+
+  <div class="magic-particles">
+    <script>
+      for (let i = 0; i < 20; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.animationDelay = Math.random() * 8 + 's';
+        particle.style.animationDuration = (Math.random() * 4 + 6) + 's';
+        document.querySelector('.magic-particles').appendChild(particle);
+      }
+    </script>
+  </div>
+
+  <div class="candles">
+    <div class="candle"><div class="candle-flame"></div><div class="candle-body"></div></div>
+    <div class="candle"><div class="candle-flame"></div><div class="candle-body"></div></div>
+    <div class="candle"><div class="candle-flame"></div><div class="candle-body"></div></div>
+    <div class="candle"><div class="candle-flame"></div><div class="candle-body"></div></div>
+    <div class="candle"><div class="candle-flame"></div><div class="candle-body"></div></div>
+  </div>
+
+  <div class="lightning">⚡</div>
+  <div class="owl">🦉</div>
+
+  <div class="title-section">
+    <h1 class="game-title">HOGWARTS</h1>
+    <p class="sub-title">⚔️ 魔法觉醒 ⚔️</p>
+  </div>
+
+  <div id="level1Container" class="flex flex-col items-center justify-center gap-4 mt-4 relative z-10">
+    <input type="text" id="playerName" placeholder="请输入你的魔法昵称" 
+           class="px-5 py-2.5 text-center rounded-full bg-[#121224] text-[#c0aa6e] border border-amber-500/40 focus:outline-none focus:border-amber-500 shadow-inner w-72 text-lg font-bold tracking-wider">
+    
+    <div class="w-[360px] h-[220px] border-2 border-amber-500/50 rounded-xl overflow-hidden bg-black/60 shadow-2xl relative flex items-center justify-center">
+      <img src="/video_feed" class="w-full h-full object-cover" alt="等待眼动/人脸魔法相机初始化...">
+    </div>
+
+    <div id="sortingCardDisplay" style="display:none;" class="w-[500px] bg-gradient-to-r from-purple-950/50 to-black/80 border border-amber-500/40 px-6 py-3 rounded-xl text-center shadow-xl"></div>
+  </div>
+  
+  <p class="house-tip" id="houseTip">戴上分院帽，点击下方按钮开启分院仪式...</p>
+
+  <div class="start-button">
+    <button class="btn-magic" id="sortButton" onclick="startSortingCeremony()">⚡ 开启分院仪式</button>
+    <button class="btn-magic" id="duelButton" style="display:none;margin-left:12px;" onclick="startFirstDuel()">🛡️ 开始第一关试炼</button>
+  </div>
+
+  <div id="duelResult" style="display:none; margin-top:15px; color:#c0aa6e; font-size:16px; text-align:center; position:relative; z-index:20;"></div>
+
+
+  <div id="level2Container" style="display:none;" class="flex flex-col items-center justify-center gap-4 mt-6 relative z-10 w-full px-12">
+    <h2 class="text-2xl text-purple-400 font-bold tracking-widest">【 第二关：声控试炼 · 魔法咒语 】</h2>
+    <p class="text-gray-300 text-xs max-w-xl text-center">三头怪进入暴走状态！请从下方挑选一个魔咒卡牌，然后点击麦克风大声朗读它！</p>
+    
+    <div id="spellCardContainer" class="flex gap-4 my-2 justify-center"></div>
+    
+    <div class="w-[460px] bg-black/60 border border-purple-500/30 p-5 rounded-xl flex flex-col items-center gap-3 shadow-2xl">
+      <p class="text-xs text-gray-400">当前选定魔咒：</p>
+      <p id="activeSpellText" class="text-xl font-mono text-amber-400 font-black tracking-wider">⏳ 请挑选上方魔咒卡牌</p>
+      
+      <button id="recordBtn" class="btn-magic py-2 text-base bg-purple-950/40 opacity-50 cursor-not-allowed" disabled onclick="startVoiceRecognition()">
+        🎤 注入法力（大声念咒）
+      </button>
+      
+      <div id="spellResultPanel" style="display:none;" class="w-full border p-3 rounded-lg text-center bg-black/40">
+         <p id="spellResultStatus" class="text-base font-bold"></p>
+         <p id="spellResultScores" class="text-xs text-gray-400 mt-1"></p>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="castle">
+    <svg viewBox="0 0 600 300" fill="none">
+      <path d="M300 50 L310 80 L305 80 L315 40 L325 80 L320 80 L330 30 L340 80 L335 80 L345 60 L355 80 L350 80 L360 50" fill="#2a2a4a"/>
+      <path d="M280 100 L275 150 L285 150 Z" fill="#1a1a3a"/>
+      <path d="M320 100 L325 150 L315 150 Z" fill="#1a1a3a"/>
+      <path d="M200 120 L200 200 L220 200 L220 150 L240 150 L240 200 L260 200 L260 140" fill="#2a2a4a"/>
+      <path d="M340 120 L340 200 L360 200 L360 150 L380 150 L380 200 L400 200 L400 140" fill="#2a2a4a"/>
+      <path d="M180 180 L180 250 L420 250 L420 180" fill="#1a1a2e"/>
+      <rect x="200" y="200" width="30" height="50" fill="#2a2a4a"/>
+      <rect x="250" y="190" width="40" height="60" fill="#2a2a4a"/>
+      <rect x="310" y="200" width="30" height="50" fill="#2a2a4a"/>
+      <rect x="360" y="210" width="30" height="40" fill="#2a2a4a"/>
+    </svg>
+  </div>
+
+  <div class="bottom-decoration"></div>
+</div>
+
+<script>
+// 🔮 全局记忆魔咒：用来存储分院帽给玩家决定的学院名称，默认为格兰芬多
+let playerHouse = "Gryffindor"; 
+
+function startSortingCeremony() {
+  const nameInput = document.getElementById('playerName').value.trim();
+  const tipText = document.getElementById('houseTip');
+  const cardDisplay = document.getElementById('sortingCardDisplay');
+  
+  if (!nameInput) {
+    tipText.innerText = '名字是契约的开始，请先输入你的魔法昵称！';
+    tipText.style.color = "#f87171";
+    return;
+  }
+
+  tipText.innerText = "分院帽正在审视你的灵魂特征，请正对镜头并保持微笑...";
+  tipText.style.color = "#c0aa6e";
+  cardDisplay.style.display = 'none';
+
+  fetch('/api/sort_ceremony', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: nameInput })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.status === 'success') {
+      // 🌟 核心同步：捕获分院帽返回的真实学院，存入全局变量
+      playerHouse = data.house; 
+
+      cardDisplay.style.display = 'block';
+      cardDisplay.innerHTML = `
+        <h3 class="text-2xl font-black text-amber-400 mb-1">🎩 分院帽高呼：【${data.house} 学院】</h3>
+        <p class="text-xs text-gray-300 leading-relaxed">特征解析：${data.features}</p>
+      `;
+      tipText.innerText = `恭喜！你已被分配至【${data.house}】学院。可以准备开启第一关试炼。`;
+      tipText.style.color = "#4ade80";
+      document.getElementById('duelButton').style.display = 'inline-block';
+    } else {
+      cardDisplay.style.display = 'block';
+      cardDisplay.innerHTML = `<p class="text-red-400 font-bold">分院魔法失败: ${data.message}</p>`;
+      tipText.innerText = "分院仪式受阻，请确保人脸完全暴露在相机视窗内。";
+      tipText.style.color = "#f87171";
+    }
+  })
+  .catch(error => {
+    console.error('连接魔法世界失败:', error);
+    tipText.innerText = "错误：摄魂怪切断了与 Python 后端的魔法链接！";
+    tipText.style.color = "#f87171";
+  });
+}
+
+// ========== 第一关逐轮交互 ==========
+let duel1State = null;
+let duel1Interval = null;
+let duel1Countdown = 3;
+let duel1CountdownTimer = null;
+
+function startFirstDuel() {
+  const tipText = document.getElementById('houseTip');
+  const duelResult = document.getElementById('duelResult');
+  const duelButton = document.getElementById('duelButton');
+
+  // 隐藏掉不需要的分院面板
+  document.getElementById('sortingCardDisplay').style.display = 'none';
+
+  duelButton.disabled = true;
+  duelButton.innerText = '试炼进行中...';
+  tipText.innerText = '第一关试炼开始！五局三胜制...';
+  tipText.style.color = '#c0aa6e';
+  duelResult.style.display = 'none';
+
+  fetch('/api/duel1/start', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.status === 'success') {
+      duel1State = data.game_state;
+      showDuel1UI();
+    } else {
+      tipText.innerText = `试炼启动失败：${data.message}`;
+      resetDuel1Button();
+    }
+  })
+  .catch(error => {
+    console.error('试炼连接失败:', error);
+    tipText.innerText = '错误：无法与魔法试炼服务器建立连接。';
+    resetDuel1Button();
+  });
+}
+
+function showDuel1UI() {
+  const duelResult = document.getElementById('duelResult');
+  duelResult.style.display = 'block';
+  updateDuel1Display();
+  startDuel1Countdown();
+}
+
+function updateDuel1Display() {
+  const duelResult = document.getElementById('duelResult');
+  if (!duel1State) return;
+  
+  let html = `<div style="font-size:16px; margin-bottom:5px;">`;
+  html += `<strong>第 ${duel1State.round_num} 局</strong> | `;
+  html += `<span style="color:#4ade80;">你: ${duel1State.player_wins}胜</span> | `;
+  html += `<span style="color:#f87171;">三头怪: ${duel1State.monster_wins}胜</span>`;
+  html += `</div>`;
+  html += `<div id="duel1Countdown" style="font-size:22px; color:#fbbf24; margin:5px 0;">倒计时: ${duel1Countdown}</div>`;
+  html += `<div id="duel1Gesture" style="font-size:15px; color:#c0aa6e;">正在检测手势...</div>`;
+  
+  if (duel1State.rounds && duel1State.rounds.length > 0) {
+    html += `<div style="margin-top:8px; text-align:left; display:inline-block; font-size:13px; background:rgba(0,0,0,0.4); padding:6px 15px; border-radius:8px;">`;
+    html += `<strong>战局历史:</strong><ul style="margin:2px 0; padding-left:15px;">`;
+    duel1State.rounds.forEach(r => {
+      const color = r.result === 'player' ? '#4ade80' : (r.result === 'monster' ? '#f87171' : '#fbbf24');
+      html += `<li style="color:${color};">第${r.round}局: 你 [${gestureToEmoji(r.player_choice)}] vs 三头怪 [${gestureToEmoji(r.monster_choice)}] - ${r.result === 'player' ? '你赢' : (r.result === 'monster' ? '怪赢' : '平局')}</li>`;
+    });
+    html += `</ul></div>`;
+  }
+  
+  duelResult.innerHTML = html;
+}
+
+function gestureToEmoji(gesture) {
+  if (gesture === 'rock') return '✊ 石头';
+  if (gesture === 'paper') return '✋ 布';
+  if (gesture === 'scissors') return '✌️ 剪刀';
+  return gesture;
+}
+
+function startDuel1Countdown() {
+  duel1Countdown = 3;
+  duel1Interval = setInterval(() => {
+    fetch('/api/duel1/detect')
+      .then(response => response.json())
+      .then(data => {
+        const gestureDiv = document.getElementById('duel1Gesture');
+        if (gestureDiv) {
+          if (data.gesture) {
+            gestureDiv.innerHTML = `检测到: <strong style="color:#4ade80;">${gestureToEmoji(data.gesture)}</strong>`;
+          } else {
+            gestureDiv.innerHTML = '正在检测手势... <span style="color:#fbbf24;">(请面向镜头出拳)</span>';
+          }
+        }
+      })
+      .catch(err => console.error('手势检测错误:', err));
+  }, 200);
+  
+  duel1CountdownTimer = setInterval(() => {
+    duel1Countdown--;
+    const countdownDiv = document.getElementById('duel1Countdown');
+    if (countdownDiv) { countdownDiv.innerHTML = `倒计时: ${duel1Countdown}`; }
+    if (duel1Countdown <= 0) { playDuel1Round(); }
+  }, 1000);
+}
+
+function playDuel1Round() {
+  clearInterval(duel1Interval);
+  clearInterval(duel1CountdownTimer);
+  
+  const gestureDiv = document.getElementById('duel1Gesture');
+  if (gestureDiv) gestureDiv.innerHTML = '魔力对撞中...判定结果...';
+  
+  fetch('/api/duel1/auto_play', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.status === 'success') {
+      duel1State = data.result.status;
+      showRoundResult(data.result.round, data.detected_gesture);
+    } else {
+      tipText.innerText = `游戏对决出现异常: ${data.message}`;
+      resetDuel1Button();
+    }
+  })
+  .catch(error => {
+    console.error('游戏进行失败:', error);
+    resetDuel1Button();
+  });
+}
+
+function showRoundResult(round, detectedGesture) {
+  const duelResult = document.getElementById('duelResult');
+  let resultColor = round.result === 'player' ? '#4ade80' : (round.result === 'monster' ? '#f87171' : '#fbbf24');
+  let resultText = round.result === 'player' ? '🎉 你赢了这一局！' : (round.result === 'monster' ? '💀 三头怪赢了这一局！' : '🤝 平局！');
+  
+  let html = `<div style="font-size:16px; margin-bottom:5px;"><strong>第 ${round.round} 局结果</strong></div>`;
+  html += `<div style="font-size:18px; color:${resultColor}; font-weight:bold;">${resultText}</div>`;
+  html += `<div style="font-size:14px; margin-top:20px;">你出: ${gestureToEmoji(round.player_choice)} | 三头怪出: ${gestureToEmoji(round.monster_choice)}</div>`;
+  html += `<div style="margin-top:5px;"><span style="color:#4ade80;">你: ${duel1State.player_wins}胜</span> | <span style="color:#f87171;">三头怪: ${duel1State.monster_wins}胜</span></div>`;
+  
+  duelResult.innerHTML = html;
+  
+  if (duel1State.is_finished) {
+    setTimeout(() => { showFinalResult(); }, 1200);
+  } else {
+    setTimeout(() => {
+      duel1Countdown = 3;
+      updateDuel1Display();
+      startDuel1Countdown();
+    }, 1800);
+  }
+}
+
+function showFinalResult() {
+  const duelResult = document.getElementById('duelResult');
+  const tipText = document.getElementById('houseTip');
+  const duelButton = document.getElementById('duelButton');
+  
+  const isWin = duel1State.overall_win;
+  let html = `<div style="font-size:20px; font-weight:900; margin:10px 0;">`;
+  html += isWin ? '🎉 恭喜你！手势试炼彻底通过！' : '💀 第一关挑战失败，三头怪仍在狞笑...';
+  html += `</div>`;
+  html += `<div style="font-size:15px; margin-bottom: 10px;">最终对决比分: 你 ${duel1State.player_wins} : ${duel1State.monster_wins} 三头怪</div>`;
+  
+  if (isWin) {
+    html += `<div style="margin-top:15px; display:flex; justify-content:center; gap:15px;">`;
+    html += `<button class="btn-magic" id="nextLevelBtn" onclick="enterLevel2Stage()" style="background: linear-gradient(135deg, #4c1d95 0%, #7c3aed 50%, #4c1d95 100%); border-color:#a78bfa; padding:10px 35px; font-size:16px;">🔮 开启第二关：魔咒对决 →</button>`;
+    html += `</div>`;
+  }
+  
+  duelResult.innerHTML = html;
+  tipText.innerText = isWin ? '首战告捷！前方传来了狂暴的古老咒语低鸣，准备迎接下一关...' : '由于对决落败，无法推开下一关的青铜大门。';
+  tipText.style.color = isWin ? '#4ade80' : '#f87171';
+  
+  duelButton.disabled = false;
+  duelButton.innerText = '🛡️ 重新挑战第一关';
+}
+
+function resetDuel1Button() {
+  const duelButton = document.getElementById('duelButton');
+  const tipText = document.getElementById('houseTip');
+  duelButton.disabled = false;
+  duelButton.innerText = '🛡️ 开始第一关试炼';
+}
+
+
+// ==========================================
+// 🎤 第二关声控魔咒联动控制引擎 (安全加固版)
+// ==========================================
+let chosenSpellString = ""; 
+
+function enterLevel2Stage() {
+  // 隐退第一关的所有元素
+  document.getElementById('level1Container').style.display = 'none';
+  document.getElementById('duelResult').style.display = 'none';
+  document.getElementById('sortButton').style.display = 'none';
+  document.getElementById('duelButton').style.display = 'none';
+  
+  // 闪亮登场第二关界面
+  document.getElementById('level2Container').style.display = 'flex';
+  
+  const tipText = document.getElementById('houseTip');
+  tipText.innerText = `正在联系大模型教授，为【${playerHouse}学院】现场编织英文魔咒卡牌...`;
+  tipText.style.color = '#c0aa6e';
+
+  // ⚡【安全核心修复】：在这里补全 headers 并且把学院名称封装成 JSON 塞给大模型后端！
+  fetch('/api/init_duel2', { 
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ house: playerHouse })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.status === 'success') {
+      const container = document.getElementById('spellCardContainer');
+      container.innerHTML = "";
+      
+      data.spells.forEach((spell, idx) => {
+        container.innerHTML += `
+          <div class="px-5 py-3 bg-gradient-to-b from-purple-950/40 to-black/90 border border-purple-500/40 rounded-xl cursor-pointer hover:border-amber-400 transition-all text-center w-40 shadow-xl"
+               onclick="selectSpellCard(this, '${spell.replace(/'/g, "\\'")}')">
+            <p class="text-xs text-purple-400 font-bold mb-1">魔咒卡片 0${idx+1}</p>
+            <p class="text-xs font-mono text-white font-bold break-words">${spell}</p>
+          </div>
+        `;
+      });
+      tipText.innerText = '✨ AI 专属魔咒卡牌编织成功！请在上方挑选一项你想咏唱的法术契约。';
+    } else {
+      tipText.innerText = `魔咒库架设失败: ${data.message}`;
+    }
+  })
+  .catch(err => {
+    console.error('魔咒库通信错误:', err);
+    tipText.innerText = '错误：无法召回 AI 魔法秘籍，可能网络已被屏蔽。';
+  });
+}
+
+function selectSpellCard(element, spellText) {
+  document.querySelectorAll('#spellCardContainer > div').forEach(card => {
+    card.classList.remove('border-amber-400', 'bg-purple-900/50');
+  });
+  element.classList.add('border-amber-400', 'bg-purple-900/50');
+  
+  chosenSpellString = spellText;
+  document.getElementById('activeSpellText').innerText = spellText;
+  
+  const btn = document.getElementById('recordBtn');
+  btn.disabled = false;
+  btn.classList.remove('opacity-50', 'cursor-not-allowed');
+}
+
+function startVoiceRecognition() {
+  const btn = document.getElementById('recordBtn');
+  const panel = document.getElementById('spellResultPanel');
+  const statusText = document.getElementById('spellResultStatus');
+  const scoresText = document.getElementById('spellResultScores');
+  const tipText = document.getElementById('houseTip');
+  
+  btn.innerText = "🔮 正在倾听中...请大声朗读咒语！";
+  btn.disabled = true;
+  panel.style.display = 'none';
+  tipText.innerText = "请保持周围安静，对准本地麦克风在 3 秒内清晰诵念出英文字标...";
+
+  fetch('/api/cast_spell', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ spell: chosenSpellString })
+  })
+  .then(res => res.json())
+  .then(data => {
+    btn.innerText = "🎤 注入法力（大声念咒）";
+    btn.disabled = false;
+    panel.style.display = 'block';
+    
+    if (data.success) {
+      panel.className = "w-full border p-3 rounded-lg text-center bg-green-950/40 border-green-500/50 animate-bounce";
+      statusText.className = "text-base font-bold text-green-400";
+      statusText.innerText = "⚡ 施法成功！魔咒威能爆表！";
+      scoresText.innerText = `识别为你念了: "${data.recognized}" (声波相似重合度: ${data.similarity}%)`;
+      tipText.innerText = "不可思议！你已经彻底驾驭了高阶音震法术，成功击溃三头怪！";
+      tipText.style.color = "#4ade80";
+    } else {
+      panel.className = "w-full border p-3 rounded-lg text-center bg-red-950/40 border-red-500/50";
+      statusText.className = "text-base font-bold text-red-400";
+      statusText.innerText = "💥 施法失败！咒语未生效";
+      scoresText.innerText = `识别为你念了: "${data.recognized}" (声波相似重合度: ${data.similarity}%)`;
+      tipText.innerText = "吐字偏差过大或未检出声音，请保持呼吸平稳，再次发起冲击！";
+      tipText.style.color = "#f87171";
+    }
+  })
+  .catch(err => {
+    console.error(err);
+    btn.innerText = "🎤 注入法力（大声念咒）";
+    btn.disabled = false;
+    panel.style.display = 'block';
+    statusText.innerText = "❌ 异常：Python未检测到可用麦克风硬件输入";
+    statusText.className = "text-base font-bold text-red-400";
+  });
+}
+</script>
+</body>
+</html>

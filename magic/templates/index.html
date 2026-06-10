@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>哈利波特魔法游戏 - 核心试炼</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Noto+Serif+SC:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+body { 
+  font-family: 'Noto Serif SC', serif; 
+  background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 50%, #16213e 100%);
+  overflow: hidden;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.game-container {
+  width: 1280px;
+  height: 720px;
+  background: linear-gradient(180deg, rgba(10, 10, 26, 0.9) 0%, rgba(26, 26, 46, 0.95) 50%, rgba(22, 33, 62, 0.9) 100%);
+  border: 2px solid rgba(192, 170, 110, 0.3);
+  border-radius: 15px;
+  box-shadow: 0 0 50px rgba(192, 170, 110, 0.15), 0 0 100px rgba(192, 170, 110, 0.05);
+  position: relative;
+  overflow: hidden;
+}
+/* 星空背景与装饰性动画（保持你原汁原味的震撼视觉效果） */
+.stars, .magic-particles { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; }
+.star { position: absolute; background: white; border-radius: 50%; animation: twinkle 3s ease-in-out infinite; }
+@keyframes twinkle { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+.castle { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 600px; height: 300px; opacity: 0.4; pointer-events: none;}
+.candles { position: absolute; top: 30px; left: 50%; transform: translateX(-50%); display: flex; gap: 80px; }
+.candle { display: flex; flex-direction: column; align-items: center; animation: float 4s ease-in-out infinite; }
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+.candle-body { width: 16px; height: 50px; background: linear-gradient(90deg, #d4a574 0%, #c49464 50%, #d4a574 100%); border-radius: 3px; }
+.candle-flame { width: 12px; height: 20px; background: linear-gradient(to top, #ff6b35 0%, #ffd700 50%, #fffacd 100%); border-radius: 50%/60% 60% 40% 40%; animation: flicker 0.3s ease-in-out infinite alternate; filter: blur(1px); box-shadow: 0 0 20px rgba(255, 215, 0, 0.5); }
+@keyframes flicker { 0% { transform: scale(1) rotate(-2deg); } 100% { transform: scale(1.1) rotate(2deg); } }
+.game-title { font-size: 48px; font-weight: 900; color: #c0aa6e; text-shadow: 0 0 20px rgba(192, 170, 110, 0.5); letter-spacing: 8px; text-align: center; padding-top: 40px; }
+.btn-magic { background: linear-gradient(135deg, #2d1b4e 0%, #4a2c7a 50%, #2d1b4e 100%); border: 2px solid rgba(192, 170, 110, 0.6); border-radius: 50px; padding: 12px 45px; font-size: 18px; font-weight: 700; color: #c0aa6e; letter-spacing: 4px; cursor: pointer; transition: all 0.3s ease; }
+.btn-magic:hover { transform: translateY(-2px); box-shadow: 0 0 30px rgba(192, 170, 110, 0.5); }
+</style>
+</head>
+<body>
+
+<div class="game-container">
+  <div class="stars"></div>
+  <div class="candles"><div class="candle"><div class="candle-flame"></div><div class="candle-body"></div></div><div class="candle"><div class="candle-flame"></div><div class="candle-body"></div></div><div class="candle"><div class="candle-flame"></div><div class="candle-body"></div></div></div>
+  <h1 class="game-title relative z-50">HOGWARTS</h1>
+
+  <div id="stage-start" class="relative z-10 flex flex-col items-center justify-center gap-4 mt-6">
+    <p class="text-xl text-amber-600 tracking-widest font-medium">⚔️ 魔法试炼 · 序章 ⚔️</p>
+    <input type="text" id="playerName" placeholder="请输入你的魔法昵称" 
+           class="px-5 py-2.5 text-center rounded-full bg-[#121224] text-[#c0aa6e] border border-amber-500/40 focus:outline-none focus:border-amber-500 shadow-inner w-72 text-lg font-bold tracking-wider">
+    
+    <div class="w-[360px] h-[240px] border-2 border-amber-500/50 rounded-xl overflow-hidden bg-black/60 shadow-2xl">
+      <img src="/video_feed" class="w-full h-full object-cover" alt="等待相机初始化...">
+    </div>
+    <p class="text-sm text-[#8b7355] tracking-widest" id="houseTip">戴上分院帽，点击下方按钮开启分院仪式...</p>
+    <button class="btn-magic mt-2" onclick="startSortingCeremony()">⚡ 开启分院仪式</button>
+  </div>
+
+  <div id="stage-plot" class="hidden relative z-10 flex flex-col items-center justify-center gap-8 mt-16 px-20 text-center">
+    <p class="text-2xl text-amber-500 font-bold tracking-wide">⚠️ 突发状况！</p>
+    <div class="text-xl text-gray-300 space-y-4 leading-loose max-w-2xl bg-black/40 p-6 rounded-xl border border-purple-900/30">
+      <p id="plot-welcome"></p>
+      <p>🚨 一只凶猛的<span class="text-red-500 font-bold">三头怪</span>突然挡住了前行的去路！</p>
+      <p>你退无可退，只有通过他的<span class="text-yellow-500">三重魔法考验</span>才能死里逃生。</p>
+    </div>
+    <button class="btn-magic animate-bounce" onclick="enterDuel1()">⚔️ 迎战三头怪（第一关）</button>
+  </div>
+
+  <div id="stage-duel1" class="hidden relative z-10 flex flex-col items-center justify-center gap-4 mt-6">
+    <p class="text-2xl text-red-400 font-bold tracking-widest">【第一关：不到十】</p>
+    <p class="text-gray-400 text-sm">请对着摄像头摆出：石头、剪刀 或 布的手势（五局三胜）</p>
+    
+    <div class="flex items-center gap-8 bg-black/30 p-4 rounded-xl border border-amber-500/20">
+      <div class="w-[480px] h-[320px] border border-purple-500 rounded-lg overflow-hidden bg-black">
+        <img id="duel1-video" src="" class="w-full h-full object-cover" alt="正在加载试炼场相机...">
+      </div>
+      
+      <div class="w-64 flex flex-col justify-between text-center gap-4 h-full">
+        <div class="bg-red-950/40 p-3 rounded border border-red-500/20">
+          <p class="text-xs text-red-400">🔥 三头怪选择</p>
+          <p class="text-3xl mt-1" id="boss-choice">❓</p>
+        </div>
+        <div class="bg-blue-950/40 p-3 rounded border border-blue-500/20">
+          <p class="text-xs text-blue-400">🧙‍♂️ 你的手势</p>
+          <p class="text-3xl mt-1" id="player-choice">❓</p>
+        </div>
+        <div class="text-amber-500 font-bold tracking-wider py-2 bg-black/60 rounded">
+          比分: <span id="game-score" class="text-white">0 : 0</span>
+        </div>
+      </div>
+    </div>
+    
+    <p id="duel1-tip" class="text-yellow-600 animate-pulse text-sm">正在读取您的手势姿态...</p>
+  </div>
+
+  <div class="castle">
+    <svg viewBox="0 0 600 300" fill="none"><path d="M300 50 L310 80 L305 80 L315 40 L325 80 L320 80 L330 30 L340 80 L335 80 L345 60 L355 80 L350 80 L360 50" fill="#2a2a4a"/><path d="M280 100 L275 150 L285 150 Z" fill="#1a1a3a"/><path d="M320 100 L325 150 L315 150 Z" fill="#1a1a3a"/><path d="M180 180 L180 250 L420 250 L420 180" fill="#1a1a2e"/></svg>
+  </div>
+</div>
+
+<script>
+// 生成唯美粒子效果
+const starsContainer = document.querySelector('.stars');
+for (let i = 0; i < 40; i++) {
+  const star = document.createElement('div');
+  star.className = 'star';
+  star.style.left = Math.random() * 100 + '%'; star.style.top = Math.random() * 100 + '%';
+  star.style.width = star.style.height = Math.random() * 3 + 1 + 'px';
+  star.style.animationDelay = Math.random() * 3 + 's';
+  starsContainer.appendChild(star);
+}
+
+// 🧙‍♂️ 全局玩家状态档案
+let wizardProfile = { name: "", house: "", features: "" };
+
+// 阶段跳转函数：专门负责舞台的切换显示
+function switchStage(activeStageId) {
+  document.querySelectorAll('.game-container > div[id^="stage-"]').forEach(stage => {
+    stage.classList.add('hidden');
+  });
+  document.getElementById(activeStageId).classList.remove('hidden');
+}
+
+// 1. 【开始分院】按钮点击事件
+function startSortingCeremony() {
+  const nameInput = document.getElementById('playerName').value.trim();
+  const tipText = document.getElementById('houseTip');
+  if (!nameInput) { alert('请先留下你在魔法界的尊名！'); return; }
+
+  tipText.innerText = "分院帽正在细细端详你的脸部轮廓，抽取特征向量...";
+  
+  fetch('/api/sort_ceremony', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: nameInput })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.status === 'success') {
+      // 保存玩家数据
+      wizardProfile.name = nameInput;
+      wizardProfile.house = data.house;
+      wizardProfile.features = data.features;
+      
+      alert(`【分院帽高呼】：\n\n 🌟 ${data.house} 学院 🌟\n\n特征匹配结果：${data.features}`);
+      
+      // 🎬 丝滑切换到第二阶段：剧情过渡
+      document.getElementById('plot-welcome').innerText = `尊敬的 ${wizardProfile.name}，你已被分入著名的【${wizardProfile.house}】学院！就在你准备踏入校园大门时——`;
+      switchStage('stage-plot');
+    } else {
+      alert(`魔法中断: ${data.message}`);
+    }
+  }).catch(err => { console.error(err); alert('摄魂怪断网警告！请确认是用 http://127.0.0.1:5000 访问的网页！'); });
+}
+
+// 2. 【进入第一关】按钮点击事件
+function enterDuel1() {
+  switchStage('stage-duel1');
+  // 🚀 核心关键：让第一关的视频流图片标签指向 Flask 后端负责第一关计算的路由！
+  document.getElementById('duel1-video').src = "/video_feed"; 
+  
+  // 提示：你目前可以先用 /video_feed 测试画面，后续写好后台手势判断后，
+  // 替换成如 "/api/duel1_feed" 即可在网页上直接看带手势骨架图的画面！
+}
+</script>
+</body>
+</html>
