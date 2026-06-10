@@ -100,7 +100,7 @@
         <p class="text-gray-400 mb-6">选择一张魔咒卡牌，然后大声念出它！</p>
         <div id="spellCards" class="flex gap-6 mb-8"></div>
         <div class="bg-black/40 border border-purple-500/40 p-6 rounded-xl flex flex-col items-center gap-3">
-          <p class="text-amber-400 font-mono text-xl" id="activeSpell">⏳ 请挑选魔咒卡牌</p>
+          <p class="text-white font-mono text-xl" id="activeSpell">⏳ 请挑选魔咒卡牌</p>
           <button id="recordBtn" class="btn-magic opacity-50 cursor-not-allowed" disabled onclick="startVoice()">🎤 注入法力</button>
           <div id="spellFeedback" class="hidden text-center"></div>
         </div>
@@ -114,8 +114,8 @@
           <span style="color:#f87171;">负: <span id="spellLossesDisplay">0</span></span>
         </div>
         <div class="text-sm text-gray-400 mt-2">当前咒语：</div>
-        <div id="currentSpellDisplay" class="text-purple-400 font-mono text-sm break-words">未选择</div>
-        <div id="spellStatusText" class="text-xs text-gray-500 mt-2">等待开始...</div>
+        <div id="currentSpellDisplay" class="text-white font-mono text-sm break-words">未选择</div>
+        <div id="spellStatusText" class="text-xs text-white mt-2">等待开始...</div>
       </div>
     </div>
   </div>
@@ -153,13 +153,15 @@
 <script type="module">
   // ==================== 音频 ====================
   const bgMusic = document.getElementById('bgMusic');
-  let musicStarted = false;
-  function tryPlayMusic() {
-    if (!musicStarted) {
-      bgMusic.play().then(() => { musicStarted = true; bgMusic.volume = 0.4; }).catch(() => {});
+  function switchMusic(track) {
+    const source = bgMusic.querySelector('source');
+    if (source.getAttribute('src') !== track) {
+      source.setAttribute('src', track);
+      bgMusic.load();
     }
+    bgMusic.play().then(() => { bgMusic.volume = 0.4; }).catch(() => {});
   }
-  document.body.addEventListener('click', tryPlayMusic, { once: true });
+  document.body.addEventListener('click', () => switchMusic('assets/music/首页.mp3'), { once: true });
 
   const AudioCtx = window.AudioContext || window.webkitAudioContext;
   let audioCtx = null;
@@ -232,7 +234,7 @@
   }
 
   window.startSorting = async function() {
-    tryPlayMusic();
+    switchMusic('assets/music/首页.mp3');
     const name=document.getElementById('playerName').value.trim();
     if(!name){alert('请输入昵称');return;}
     document.getElementById('houseTip').innerText='分院帽正在审视你的灵魂...';
@@ -286,7 +288,7 @@
   }
 
   window.startDuel1 = function() {
-    tryPlayMusic();
+    switchMusic('assets/music/第一关.mp3');
     duel1State={playerWins:0,monsterWins:0,round:1,rounds:[],active:true,finished:false};
     document.getElementById('normalUI').classList.add('hidden');
     document.getElementById('houseTip').classList.add('hidden');
@@ -334,6 +336,7 @@
     if(duel1State.finished){
       const win=duel1State.playerWins>duel1State.monsterWins;
       setTimeout(()=>{
+        switchMusic('assets/music/首页.mp3');
         info.innerHTML=`<div class="text-2xl font-bold">${win?'🎉 通过第一关！':'💀 第一关失败'}</div>`;
         const cam=document.getElementById('normalCamera');
         document.getElementById('normalUI').insertBefore(cam,document.getElementById('normalUI').firstChild);
@@ -389,7 +392,7 @@
   }
 
   window.startDuel2 = function(){
-    tryPlayMusic();
+    switchMusic('assets/music/第二关.mp3');
     document.getElementById('mainSection').classList.add('hidden-section');
     document.getElementById('duel2Section').classList.remove('hidden-section');
     spellRound=1; spellWins=0; spellLosses=0; isSpellFinished=false;
@@ -401,7 +404,7 @@
   function loadSpellRound(){
     const shuffled=[...spells].sort(()=>Math.random()-0.5);
     const chosen=shuffled.slice(0,3);
-    document.getElementById('spellCards').innerHTML=chosen.map(s=>`<div class="spell-option px-5 py-3 bg-purple-950/40 border border-purple-500/40 rounded-xl cursor-pointer" onclick="selectSpell('${s}', this)">${s}</div>`).join('');
+    document.getElementById('spellCards').innerHTML=chosen.map(s=>`<div class="spell-option text-white px-5 py-3 bg-purple-950/40 border border-purple-500/40 rounded-xl cursor-pointer" onclick="selectSpell('${s}', this)">${s}</div>`).join('');
     document.getElementById('activeSpell').innerText='⏳ 请挑选魔咒卡牌';
     document.getElementById('recordBtn').disabled=true;
     document.getElementById('recordBtn').classList.add('opacity-50','cursor-not-allowed');
@@ -443,6 +446,7 @@
           const win = spellWins >= 2;
           window.passedDuel2 = win;
           setTimeout(()=>{
+            switchMusic('assets/music/首页.mp3');
             alert(win ? '恭喜通过第二关！' : '挑战失败，重返主界面');
             document.getElementById('duel2Section').classList.add('hidden-section');
             document.getElementById('mainSection').classList.remove('hidden-section');
@@ -472,6 +476,7 @@
   };
 
   window.backToMain = function(){
+    switchMusic('assets/music/首页.mp3');
     document.getElementById('duel2Section').classList.add('hidden-section');
     document.getElementById('mainSection').classList.remove('hidden-section');
     document.getElementById('sortBtn').classList.remove('hidden');
@@ -568,6 +573,7 @@
     document.getElementById('mainSection').classList.remove('hidden-section');
     fireballs=[];
     const finishDodge=()=>{
+      switchMusic('assets/music/首页.mp3');
       if(won)sfxSuccess(); else sfxFail();
       alert(won?'🎉 恭喜！你成功躲过了所有火球，通过第三关！':'💀 你被火球击中了... 挑战失败');
       document.getElementById('duel1Btn').classList.add('hidden');
@@ -590,7 +596,7 @@
     }
   }
   window.startDuel3 = function(){
-    tryPlayMusic();
+    switchMusic('assets/music/第三关.mp3');
     document.getElementById('mainSection').classList.add('hidden-section');
     document.getElementById('duel3Section').classList.remove('hidden-section');
     const canvas=document.getElementById('dodgeCanvas'),ctx=canvas.getContext('2d');
