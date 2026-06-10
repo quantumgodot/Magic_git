@@ -144,7 +144,7 @@
   <!-- 结算视频覆盖层 -->
   <div id="settlementOverlay" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; z-index:50; background:rgba(0,0,0,0.85); align-items:center; justify-content:center;">
     <video id="settlementVideo" style="max-width:70%; max-height:70%; border-radius:12px; box-shadow:0 0 40px rgba(192,170,110,0.6);" preload="auto" playsinline>
-      <source src="assets/videos/test.mp4" type="video/mp4">
+      <source src="" type="video/mp4">
       您的浏览器不支持视频播放。
     </video>
   </div>
@@ -318,9 +318,11 @@
         const{player,monster,result}=playRound();
         let color=result==='player'?'#4ade80':(result==='monster'?'#f87171':'#fbbf24');
         info.innerHTML=`<div style="color:${color}" class="text-xl font-bold">${result==='player'?'你赢了！':(result==='monster'?'三头怪赢了！':'平局！')}</div><div class="text-sm">你出 ${player} vs 三头怪 ${monster}</div><div class="mt-2">比分：你 ${duel1State.playerWins} : ${duel1State.monsterWins}</div>`;
-        // 非平局时播放结算视频，平局直接继续
-        if(result!=='draw'){
-          playSettlementVideo(()=>proceedAfterDuel1Round(info));
+        // 非平局时播放对应结算视频，平局直接继续
+        if(result==='player'){
+          playSettlementVideo('assets/videos/第一关-石头剪刀布-魔法师每次石头剪刀布胜利画面.mp4', ()=>proceedAfterDuel1Round(info));
+        }else if(result==='monster'){
+          playSettlementVideo('assets/videos/第一关-石头剪刀布-魔法师每次石头剪刀布失败画面.mp4', ()=>proceedAfterDuel1Round(info));
         }else{
           proceedAfterDuel1Round(info);
         }
@@ -345,9 +347,12 @@
     }else{ setTimeout(()=>runDuel1Loop(),2000); }
   }
 
-  function playSettlementVideo(callback){
+  function playSettlementVideo(videoSrc, callback){
     const overlay=document.getElementById('settlementOverlay');
     const video=document.getElementById('settlementVideo');
+    // 动态切换视频源
+    video.querySelector('source').src = videoSrc;
+    video.load();
     overlay.style.display='flex';
     video.currentTime=0;
     let settled=false;
@@ -431,28 +436,36 @@
       document.getElementById('spellStatusText').innerText = success ? '成功击破！' : '法力不足...';
       updateSpellUI();
       spellRound++;
-      // 三局两胜判定
-      if(spellWins>=2 || spellLosses>=2 || spellRound>3){
-        isSpellFinished=true;
-        const win = spellWins >= 2;
-        window.passedDuel2 = win;
-        setTimeout(()=>{
-          alert(win ? '恭喜通过第二关！' : '挑战失败，重返主界面');
-          document.getElementById('duel2Section').classList.add('hidden-section');
-          document.getElementById('mainSection').classList.remove('hidden-section');
-          document.getElementById('sortBtn').classList.remove('hidden');
-          document.getElementById('duel1Btn').classList.add('hidden');
-          document.getElementById('duel2Btn').classList.add('hidden');
-          if (win) {
-            document.getElementById('duel3Btn').classList.remove('hidden');
-            document.getElementById('houseTip').innerText = '你已通过第二关！准备迎接最终试炼...';
-          } else {
-            document.getElementById('duel2Btn').classList.remove('hidden');
-            document.getElementById('houseTip').innerText = '咒语对决失败，可再次挑战第二关。';
-          }
-        },2000);
-      } else {
-        setTimeout(loadSpellRound,2000);
+      // 后续判定回调
+      const proceedSpell=()=>{
+        if(spellWins>=2 || spellLosses>=2 || spellRound>3){
+          isSpellFinished=true;
+          const win = spellWins >= 2;
+          window.passedDuel2 = win;
+          setTimeout(()=>{
+            alert(win ? '恭喜通过第二关！' : '挑战失败，重返主界面');
+            document.getElementById('duel2Section').classList.add('hidden-section');
+            document.getElementById('mainSection').classList.remove('hidden-section');
+            document.getElementById('sortBtn').classList.remove('hidden');
+            document.getElementById('duel1Btn').classList.add('hidden');
+            document.getElementById('duel2Btn').classList.add('hidden');
+            if (win) {
+              document.getElementById('duel3Btn').classList.remove('hidden');
+              document.getElementById('houseTip').innerText = '你已通过第二关！准备迎接最终试炼...';
+            } else {
+              document.getElementById('duel2Btn').classList.remove('hidden');
+              document.getElementById('houseTip').innerText = '咒语对决失败，可再次挑战第二关。';
+            }
+          },2000);
+        } else {
+          setTimeout(loadSpellRound,2000);
+        }
+      };
+      // 咒语成功时播放第二关视频
+      if(success){
+        playSettlementVideo('assets/videos/第二关-念咒语-魔法师每次念咒语成功胜利画面.mp4', proceedSpell);
+      }else{
+        proceedSpell();
       }
     };
     recognition.onerror=()=>{ alert('语音识别失败'); backToMain(); };
@@ -517,20 +530,28 @@
   function endDodgeGame(won){
     document.getElementById('duel3Section').classList.add('hidden-section');
     document.getElementById('mainSection').classList.remove('hidden-section');
-    fireballs=[]; if(won)sfxSuccess(); else sfxFail();
-    alert(won?'🎉 恭喜！你成功躲过了所有火球，通过第三关！':'💀 你被火球击中了... 挑战失败');
-    document.getElementById('duel1Btn').classList.add('hidden');
-    document.getElementById('duel2Btn').classList.add('hidden');
-    document.getElementById('duel3Btn').classList.add('hidden');
-    document.getElementById('sortBtn').classList.remove('hidden');
-    document.getElementById('normalUI').classList.remove('hidden');
-    document.getElementById('houseTip').classList.remove('hidden');
-    const cam=document.getElementById('normalCamera');
-    if(cam.parentElement.id==='gameCamera') document.getElementById('normalUI').insertBefore(cam,document.getElementById('normalUI').firstChild);
-    document.getElementById('gameArea').classList.add('hidden');
-    document.removeEventListener('keydown',window.dodgeKeyHandler);
-    window.passedDuel1 = window.passedDuel2 = false;
-    document.getElementById('houseTip').innerText = '所有试炼已完成！戴上分院帽可以再次开始冒险。';
+    fireballs=[];
+    const finishDodge=()=>{
+      if(won)sfxSuccess(); else sfxFail();
+      alert(won?'🎉 恭喜！你成功躲过了所有火球，通过第三关！':'💀 你被火球击中了... 挑战失败');
+      document.getElementById('duel1Btn').classList.add('hidden');
+      document.getElementById('duel2Btn').classList.add('hidden');
+      document.getElementById('duel3Btn').classList.add('hidden');
+      document.getElementById('sortBtn').classList.remove('hidden');
+      document.getElementById('normalUI').classList.remove('hidden');
+      document.getElementById('houseTip').classList.remove('hidden');
+      const cam=document.getElementById('normalCamera');
+      if(cam.parentElement.id==='gameCamera') document.getElementById('normalUI').insertBefore(cam,document.getElementById('normalUI').firstChild);
+      document.getElementById('gameArea').classList.add('hidden');
+      document.removeEventListener('keydown',window.dodgeKeyHandler);
+      window.passedDuel1 = window.passedDuel2 = false;
+      document.getElementById('houseTip').innerText = '所有试炼已完成！戴上分院帽可以再次开始冒险。';
+    };
+    if(won){
+      playSettlementVideo('assets/videos/第三关-躲火球-魔法师最终胜利画面.mp4', finishDodge);
+    }else{
+      finishDodge();
+    }
   }
   window.startDuel3 = function(){
     tryPlayMusic();
