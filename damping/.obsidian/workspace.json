@@ -1,0 +1,188 @@
+{
+  "main": {
+    "id": "2c021faca2ea832e",
+    "type": "split",
+    "children": [
+      {
+        "id": "fd5d4bf10ea7b4c3",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "3106e93d3de41d46",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "文献综述_机器人加工阻尼建模.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "文献综述_机器人加工阻尼建模"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "d5c20f4fac8f9c0b",
+    "type": "split",
+    "children": [
+      {
+        "id": "e95a1abc7c182d86",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "ed696a1f136c4f3c",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "文件列表"
+            }
+          },
+          {
+            "id": "9af3dde7315948f3",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "搜索"
+            }
+          },
+          {
+            "id": "00452e52fdef3aa0",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "书签"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "349b926a99b6c286",
+    "type": "split",
+    "children": [
+      {
+        "id": "8a9c0a88852d3ecb",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "e6428e7569aa0887",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "文献综述_机器人加工阻尼建模.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "文献综述_机器人加工阻尼建模 的反向链接列表"
+            }
+          },
+          {
+            "id": "c9702d2a9423014d",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "文献综述_机器人加工阻尼建模.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "文献综述_机器人加工阻尼建模 的出链列表"
+            }
+          },
+          {
+            "id": "3d9128f5ff43b742",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "标签"
+            }
+          },
+          {
+            "id": "b73f3068aed6a652",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "添加笔记属性"
+            }
+          },
+          {
+            "id": "d0cbb0cb2085c690",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "文献综述_机器人加工阻尼建模.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "文献综述_机器人加工阻尼建模 的大纲"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:打开快速切换": false,
+      "graph:查看关系图谱": false,
+      "canvas:新建白板": false,
+      "daily-notes:打开/创建今天的日记": false,
+      "templates:插入模板": false,
+      "command-palette:打开命令面板": false,
+      "bases:新建数据库": false
+    }
+  },
+  "active": "3106e93d3de41d46",
+  "lastOpenFiles": []
+}
